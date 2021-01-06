@@ -44,7 +44,7 @@ local qspec_list = [
                   [cmd.qinfo("data_request_"+idx+"_output_queue", qdict["data_requests_"+idx].inst, "output")
                    for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
                   ]),
-              cmd.mspec("ffr", "FakeFragRec", [
+              cmd.mspec("fr", "FragmentReceiver", [
                   cmd.qinfo("trigger_decision_input_queue", qdict.trigdec_for_dataflow_bookkeeping.inst, "input"),
                   cmd.qinfo("trigger_record_output_queue", qdict.trigger_record_q.inst, "output")] +
                   [cmd.qinfo("data_fragment_"+idx+"_input_queue", qdict["data_fragments_"+idx].inst, "input")
@@ -73,6 +73,13 @@ local qspec_list = [
                   "min_readout_window_ticks" : 320000,
                   "max_readout_window_ticks" : 320000, 
                   "trigger_interval_ticks" : 64000000
+                }),
+              cmd.mcmd("fr",
+                {
+                  "decision_loop_counter" : 1,
+                  "fragment_loop_counter" : 0,
+                  "general_queue_timeout" : 100,
+                  "max_timestamp_diff" : 50000000
                 }),
               cmd.mcmd("datawriter",
                 {

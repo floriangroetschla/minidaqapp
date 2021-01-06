@@ -106,8 +106,8 @@
                             }
                         ]
                     },
-                    "inst": "ffr",
-                    "plugin": "FakeFragRec"
+                    "inst": "fr",
+                    "plugin": "FragmentReceiver"
                 },
                 {
                     "data": {
@@ -283,6 +283,15 @@
                         "trigger_interval_ticks": 64000000
                     },
                     "match": "tde"
+                },
+                {
+                    "data": {
+                        "decision_loop_counter": 1,
+                        "fragment_loop_counter": 0,
+                        "general_queue_timeout": 100,
+                        "max_timestamp_diff": 50000000
+                    },
+                    "match": "fr"
                 },
                 {
                     "data": {
