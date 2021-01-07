@@ -91,18 +91,8 @@
                             },
                             {
                                 "dir": "input",
-                                "inst": "data_fragments_1",
-                                "name": "data_fragment_1_input_queue"
-                            },
-                            {
-                                "dir": "input",
-                                "inst": "data_fragments_2",
-                                "name": "data_fragment_2_input_queue"
-                            },
-                            {
-                                "dir": "input",
-                                "inst": "data_fragments_3",
-                                "name": "data_fragment_3_input_queue"
+                                "inst": "data_fragments_q",
+                                "name": "data_fragment_input_queue"
                             }
                         ]
                     },
@@ -142,7 +132,7 @@
                             },
                             {
                                 "dir": "output",
-                                "inst": "data_fragments_1",
+                                "inst": "data_fragments_q",
                                 "name": "data_fragment_output_queue"
                             }
                         ]
@@ -160,7 +150,7 @@
                             },
                             {
                                 "dir": "output",
-                                "inst": "data_fragments_2",
+                                "inst": "data_fragments_q",
                                 "name": "data_fragment_output_queue"
                             }
                         ]
@@ -178,7 +168,7 @@
                             },
                             {
                                 "dir": "output",
-                                "inst": "data_fragments_3",
+                                "inst": "data_fragments_q",
                                 "name": "data_fragment_output_queue"
                             }
                         ]
@@ -190,18 +180,8 @@
             "queues": [
                 {
                     "capacity": 20,
-                    "inst": "data_fragments_1",
-                    "kind": "FollySPSCQueue"
-                },
-                {
-                    "capacity": 20,
-                    "inst": "data_fragments_2",
-                    "kind": "FollySPSCQueue"
-                },
-                {
-                    "capacity": 20,
-                    "inst": "data_fragments_3",
-                    "kind": "FollySPSCQueue"
+                    "inst": "data_fragments_q",
+                    "kind": "FollyMPMCQueue"
                 },
                 {
                     "capacity": 20,
@@ -341,7 +321,7 @@
             "modules": [
                 {
                     "data": {
-                        "run": 42
+                        "run": 0
                     },
                     "match": ""
                 }

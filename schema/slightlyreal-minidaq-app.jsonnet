@@ -16,13 +16,11 @@ local qdict = {
     trigdec_for_dataflow_bookkeeping: cmd.qspec("trigger_decision_copy_for_bookkeeping", "FollySPSCQueue", 20),
     trigdec_for_inhibit: cmd.qspec("trigger_decision_copy_for_inhibit", "FollySPSCQueue", 20),
     trigger_record_q: cmd.qspec("trigger_record_q", "FollySPSCQueue", 20),
+    data_fragments_q: cmd.qspec("data_fragments_q", "FollyMPMCQueue", 20),
 } + {
     ["data_requests_"+idx]: cmd.qspec("data_requests_"+idx, "FollySPSCQueue", 20),
     for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
-} + {
-    ["data_fragments_"+idx]: cmd.qspec("data_fragments_"+idx, "FollySPSCQueue", 20),
-    for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
-};
+};  
 
 local qspec_list = [
     qdict[xx]
@@ -46,17 +44,16 @@ local qspec_list = [
                   ]),
               cmd.mspec("fr", "FragmentReceiver", [
                   cmd.qinfo("trigger_decision_input_queue", qdict.trigdec_for_dataflow_bookkeeping.inst, "input"),
-                  cmd.qinfo("trigger_record_output_queue", qdict.trigger_record_q.inst, "output")] +
-                  [cmd.qinfo("data_fragment_"+idx+"_input_queue", qdict["data_fragments_"+idx].inst, "input")
-                   for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
-                  ]),
+                  cmd.qinfo("trigger_record_output_queue", qdict.trigger_record_q.inst, "output"),
+		  cmd.qinfo("data_fragment_input_queue", qdict.data_fragments_q.inst, "input")] 
+		  ),
               cmd.mspec("datawriter", "DataWriter", [
                   cmd.qinfo("trigger_record_input_queue", qdict.trigger_record_q.inst, "input"),
                   cmd.qinfo("trigger_decision_for_inhibit", qdict.trigdec_for_inhibit.inst, "input"),
                   cmd.qinfo("trigger_inhibit_output_queue", qdict.trigger_inhibit_q.inst, "output")])] +
               [cmd.mspec("fdp"+idx, "FakeDataProd", [
                    cmd.qinfo("data_request_input_queue", qdict["data_requests_"+idx].inst, "input"),
-                   cmd.qinfo("data_fragment_output_queue", qdict["data_fragments_"+idx].inst, "output")])
+                   cmd.qinfo("data_fragment_output_queue", qdict.data_fragments_q.inst, "output")])
                for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
               ])
               { waitms: 1000 },
@@ -103,7 +100,7 @@ local qspec_list = [
                for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
               ]) { waitms: 1000 },
 
-    cmd.start(42) { waitms: 1000 },
+    cmd.start(0) { waitms: 1000 },
 
     cmd.stop() { waitms: 1000 },
 ]
