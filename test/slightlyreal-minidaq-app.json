@@ -58,6 +58,11 @@
                             },
                             {
                                 "dir": "output",
+                                "inst": "data_requests_0",
+                                "name": "data_request_0_output_queue"
+                            },
+                            {
+                                "dir": "output",
                                 "inst": "data_requests_1",
                                 "name": "data_request_1_output_queue"
                             },
@@ -70,11 +75,41 @@
                                 "dir": "output",
                                 "inst": "data_requests_3",
                                 "name": "data_request_3_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_4",
+                                "name": "data_request_4_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_5",
+                                "name": "data_request_5_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_6",
+                                "name": "data_request_6_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_7",
+                                "name": "data_request_7_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_8",
+                                "name": "data_request_8_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_9",
+                                "name": "data_request_9_output_queue"
                             }
                         ]
                     },
-                    "inst": "frg",
-                    "plugin": "FakeReqGen"
+                    "inst": "requestgenerator",
+                    "plugin": "RequestGenerator"
                 },
                 {
                     "data": {
@@ -91,6 +126,11 @@
                             },
                             {
                                 "dir": "input",
+                                "inst": "data_fragments_0",
+                                "name": "data_fragment_0_input_queue"
+                            },
+                            {
+                                "dir": "input",
                                 "inst": "data_fragments_1",
                                 "name": "data_fragment_1_input_queue"
                             },
@@ -103,6 +143,36 @@
                                 "dir": "input",
                                 "inst": "data_fragments_3",
                                 "name": "data_fragment_3_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_4",
+                                "name": "data_fragment_4_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_5",
+                                "name": "data_fragment_5_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_6",
+                                "name": "data_fragment_6_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_7",
+                                "name": "data_fragment_7_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_8",
+                                "name": "data_fragment_8_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_9",
+                                "name": "data_fragment_9_input_queue"
                             }
                         ]
                     },
@@ -131,6 +201,24 @@
                     },
                     "inst": "datawriter",
                     "plugin": "DataWriter"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_0",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_0",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp0",
+                    "plugin": "FakeDataProd"
                 },
                 {
                     "data": {
@@ -185,9 +273,122 @@
                     },
                     "inst": "fdp3",
                     "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_4",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_4",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp4",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_5",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_5",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp5",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_6",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_6",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp6",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_7",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_7",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp7",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_8",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_8",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp8",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_9",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_9",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp9",
+                    "plugin": "FakeDataProd"
                 }
             ],
             "queues": [
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_0",
+                    "kind": "FollySPSCQueue"
+                },
                 {
                     "capacity": 20,
                     "inst": "data_fragments_1",
@@ -205,6 +406,41 @@
                 },
                 {
                     "capacity": 20,
+                    "inst": "data_fragments_4",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_5",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_6",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_7",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_8",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_9",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_0",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
                     "inst": "data_requests_1",
                     "kind": "FollySPSCQueue"
                 },
@@ -216,6 +452,36 @@
                 {
                     "capacity": 20,
                     "inst": "data_requests_3",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_4",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_5",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_6",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_7",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_8",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_9",
                     "kind": "FollySPSCQueue"
                 },
                 {
@@ -276,13 +542,70 @@
                             8,
                             9
                         ],
-                        "max_links_in_request": 3,
+                        "max_links_in_request": 9,
                         "max_readout_window_ticks": 320000,
-                        "min_links_in_request": 3,
+                        "min_links_in_request": 1,
                         "min_readout_window_ticks": 320000,
                         "trigger_interval_ticks": 64000000
                     },
                     "match": "tde"
+                },
+                {
+                    "data": {
+                        "map": [
+                            {
+                                "apa": 0,
+                                "link": 0,
+                                "queueinstance": "data_requests_0"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 1,
+                                "queueinstance": "data_requests_1"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 2,
+                                "queueinstance": "data_requests_2"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 3,
+                                "queueinstance": "data_requests_3"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 4,
+                                "queueinstance": "data_requests_4"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 5,
+                                "queueinstance": "data_requests_5"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 6,
+                                "queueinstance": "data_requests_6"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 7,
+                                "queueinstance": "data_requests_7"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 8,
+                                "queueinstance": "data_requests_8"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 9,
+                                "queueinstance": "data_requests_9"
+                            }
+                        ]
+                    },
+                    "match": "requestgenerator"
                 },
                 {
                     "data": {
@@ -321,6 +644,42 @@
                         "temporarily_hacked_link_number": 3
                     },
                     "match": "fdp3"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 4
+                    },
+                    "match": "fdp4"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 5
+                    },
+                    "match": "fdp5"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 6
+                    },
+                    "match": "fdp6"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 7
+                    },
+                    "match": "fdp7"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 8
+                    },
+                    "match": "fdp8"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 9
+                    },
+                    "match": "fdp9"
                 }
             ]
         },
