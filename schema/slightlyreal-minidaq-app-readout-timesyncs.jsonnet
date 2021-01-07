@@ -81,7 +81,8 @@ local qspec_list = [
                   "max_links_in_request" : NUMBER_OF_FAKE_DATA_PRODUCERS,
                   "min_readout_window_ticks" : 320000,
                   "max_readout_window_ticks" : 320000, 
-                  "trigger_interval_ticks" : 64000000
+                  "trigger_interval_ticks" : 64000000,
+                  "clock_frequency_hz" : 50000000
                 }),
               cmd.mcmd("datawriter",
                 {
