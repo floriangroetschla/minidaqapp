@@ -74,7 +74,7 @@ local qspec_list = [
               cmd.mcmd("fr",
                 {
                   "decision_loop_counter" : 1,
-                  "fragment_loop_counter" : 0,
+                  "fragment_loop_counter" : NUMBER_OF_FAKE_DATA_PRODUCERS,
                   "general_queue_timeout" : 100,
                   "max_timestamp_diff" : 50000000
                 }),

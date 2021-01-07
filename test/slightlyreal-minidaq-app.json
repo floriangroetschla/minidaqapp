@@ -267,7 +267,7 @@
                 {
                     "data": {
                         "decision_loop_counter": 1,
-                        "fragment_loop_counter": 0,
+                        "fragment_loop_counter": 3,
                         "general_queue_timeout": 100,
                         "max_timestamp_diff": 50000000
                     },
