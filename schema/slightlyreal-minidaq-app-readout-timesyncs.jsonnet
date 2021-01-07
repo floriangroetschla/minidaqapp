@@ -23,6 +23,10 @@ local qdict = {
 } + {
     ["data_fragments_"+idx]: cmd.qspec("data_fragments_"+idx, "FollySPSCQueue", 20),
     for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
+} + {
+    // PAR 2021-01-07: These two are temporary, just to keep the modules from readout happy
+    requests_in: cmd.qspec("requests-in", "FollyMPMCQueue",  1000),
+    frags_out: cmd.qspec("frags-out", "FollyMPMCQueue",  1000),
 };
 
 local qspec_list = [

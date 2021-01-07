@@ -242,6 +242,16 @@
                     "kind": "FollySPSCQueue"
                 },
                 {
+                    "capacity": 1000,
+                    "inst": "frags-out",
+                    "kind": "FollyMPMCQueue"
+                },
+                {
+                    "capacity": 1000,
+                    "inst": "requests-in",
+                    "kind": "FollyMPMCQueue"
+                },
+                {
                     "capacity": 100,
                     "inst": "time_sync_q",
                     "kind": "FollyMPMCQueue"
