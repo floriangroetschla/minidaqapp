@@ -1,0 +1,400 @@
+[
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "time_sync_q",
+                                "name": "time_sync_source"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "trigger_inhibit_q",
+                                "name": "trigger_inhibit_source"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_decision_q",
+                                "name": "trigger_decision_sink"
+                            }
+                        ]
+                    },
+                    "inst": "tde",
+                    "plugin": "TriggerDecisionEmulator"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "trigger_decision_q",
+                                "name": "trigger_decision_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_decision_copy_for_bookkeeping",
+                                "name": "trigger_decision_for_event_building"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_decision_copy_for_inhibit",
+                                "name": "trigger_decision_for_inhibit"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_1",
+                                "name": "data_request_1_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_2",
+                                "name": "data_request_2_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_3",
+                                "name": "data_request_3_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "frg",
+                    "plugin": "FakeReqGen"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "trigger_decision_copy_for_bookkeeping",
+                                "name": "trigger_decision_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_record_q",
+                                "name": "trigger_record_output_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_1",
+                                "name": "data_fragment_1_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_2",
+                                "name": "data_fragment_2_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_fragments_3",
+                                "name": "data_fragment_3_input_queue"
+                            }
+                        ]
+                    },
+                    "inst": "ffr",
+                    "plugin": "FakeFragRec"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "trigger_record_q",
+                                "name": "trigger_record_input_queue"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "trigger_decision_copy_for_inhibit",
+                                "name": "trigger_decision_for_inhibit"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "trigger_inhibit_q",
+                                "name": "trigger_inhibit_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "datawriter",
+                    "plugin": "DataWriter"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "output",
+                                "inst": "fakelink-0",
+                                "name": "output"
+                            }
+                        ]
+                    },
+                    "inst": "fake-source",
+                    "plugin": "FakeCardReader"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fakelink-0",
+                                "name": "input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            }
+                        ]
+                    },
+                    "inst": "fake-handler",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_1",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_1",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp1",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_2",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_2",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp2",
+                    "plugin": "FakeDataProd"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_3",
+                                "name": "data_request_input_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_3",
+                                "name": "data_fragment_output_queue"
+                            }
+                        ]
+                    },
+                    "inst": "fdp3",
+                    "plugin": "FakeDataProd"
+                }
+            ],
+            "queues": [
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_1",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_2",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_fragments_3",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_1",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_2",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_3",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fakelink-0",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100,
+                    "inst": "time_sync_q",
+                    "kind": "FollyMPMCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "trigger_decision_copy_for_bookkeeping",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "trigger_decision_copy_for_inhibit",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "trigger_decision_q",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "trigger_inhibit_q",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "trigger_record_q",
+                    "kind": "FollySPSCQueue"
+                }
+            ]
+        },
+        "id": "init",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "sync_interval_ticks": 64000000
+                    },
+                    "match": "ftss"
+                },
+                {
+                    "data": {
+                        "links": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9
+                        ],
+                        "max_links_in_request": 3,
+                        "max_readout_window_ticks": 320000,
+                        "min_links_in_request": 3,
+                        "min_readout_window_ticks": 320000,
+                        "trigger_interval_ticks": 64000000
+                    },
+                    "match": "tde"
+                },
+                {
+                    "data": {
+                        "data_store_parameters": {
+                            "directory_path": ".",
+                            "file_layout_parameters": {
+                                "digits_for_trigger_number": 5,
+                                "trigger_record_name_prefix": "TriggerRecord"
+                            },
+                            "filename_parameters": {
+                                "digits_for_run_number": 6,
+                                "file_index_prefix": "file",
+                                "overall_prefix": "fake_minidaqapp"
+                            },
+                            "mode": "all-per-file",
+                            "name": "data_store",
+                            "type": "HDF5DataStore"
+                        }
+                    },
+                    "match": "datawriter"
+                },
+                {
+                    "data": {
+                        "data_filename": "/tmp/frames.bin",
+                        "input_limit": 10485100,
+                        "link_id": 0,
+                        "queue_timeout_ms": 2000,
+                        "rate_khz": 166,
+                        "raw_type": "wib"
+                    },
+                    "match": "fake-source"
+                },
+                {
+                    "data": {
+                        "latency_buffer_size": 100000,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.3,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 2000
+                    },
+                    "match": "fake-handler"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 1
+                    },
+                    "match": "fdp1"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 2
+                    },
+                    "match": "fdp2"
+                },
+                {
+                    "data": {
+                        "temporarily_hacked_link_number": 3
+                    },
+                    "match": "fdp3"
+                }
+            ]
+        },
+        "id": "conf",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "run": 42
+                    },
+                    "match": ""
+                }
+            ]
+        },
+        "id": "start",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": ""
+                }
+            ]
+        },
+        "id": "stop",
+        "waitms": 1000
+    }
+]
