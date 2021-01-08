@@ -89,8 +89,6 @@ local qspec_list = [
                 }),
     cmd.mcmd("ffr",
                 {
-                  "decision_loop_counter" : 1,
-                  "fragment_loop_counter" : 0,
                   "general_queue_timeout" : 100,
                   "max_timestamp_diff" : 50000000
                 }),
@@ -136,7 +134,7 @@ local qspec_list = [
       for idx in std.range(0, NUMBER_OF_DATA_PRODUCERS-1)
     ]) { waitms: 1000 },
 
-  cmd.start(42) { waitms: 1000 },
+  cmd.start(0) { waitms: 1000 },
 
   cmd.stop() { waitms: 1000 },
 ]
