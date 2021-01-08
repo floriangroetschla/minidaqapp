@@ -119,7 +119,9 @@ local qspec_list = [
         "source_queue_timeout_ms": 2000,
         "latency_buffer_size": 100000,
         "pop_limit_pct": 0.8,
-        "pop_size_pct": 0.3
+        "pop_size_pct": 0.3,
+        "apa_number": 0,
+        "link_number": 1
       }),
   ] +
     [cmd.mcmd("fdp"+idx, fdp_ns.generate_config_params(idx))

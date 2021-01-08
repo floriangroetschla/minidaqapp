@@ -257,7 +257,9 @@
                 },
                 {
                     "data": {
+                        "apa_number": 0,
                         "latency_buffer_size": 100000,
+                        "link_number": 1,
                         "pop_limit_pct": 0.8,
                         "pop_size_pct": 0.3,
                         "raw_type": "wib",
