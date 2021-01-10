@@ -2,6 +2,7 @@ local moo = import "moo.jsonnet";
 local cmd = import "appfwk-cmd-make.jsonnet";
 
 local NUMBER_OF_FAKE_DATA_PRODUCERS = 1;
+local SIMULATION_SLOWDOWN_FACTOR = 1;
 
 local fdp_ns = {
   generate_config_params(linkno=1) :: {
@@ -84,7 +85,7 @@ local qspec_list = [
         "min_readout_window_ticks" : 320000,
         "max_readout_window_ticks" : 320000, 
         "trigger_interval_ticks" : 64000000,
-        "clock_frequency_hz" : 50000000
+        "clock_frequency_hz" : 50000000/SIMULATION_SLOWDOWN_FACTOR
       }),
     cmd.mcmd("datawriter",
       {
@@ -108,7 +109,7 @@ local qspec_list = [
       {
         "link_id": 0,
         "input_limit": 10485100,
-        "rate_khz": 166,
+        "rate_khz": 2000000/1000/12/SIMULATION_SLOWDOWN_FACTOR,
         "raw_type": "wib",
         "data_filename": "/tmp/frames.bin",
         "queue_timeout_ms": 2000

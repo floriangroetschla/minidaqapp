@@ -250,7 +250,7 @@
                         "input_limit": 10485100,
                         "link_id": 0,
                         "queue_timeout_ms": 2000,
-                        "rate_khz": 166,
+                        "rate_khz": 166.66666666666666,
                         "raw_type": "wib"
                     },
                     "match": "fake-source"
