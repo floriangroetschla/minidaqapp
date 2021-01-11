@@ -108,6 +108,7 @@ local qspec_list = [
           "type" : "HDF5DataStore",
           "directory_path": ".",
           "mode": "all-per-file",
+          "max_file_size_bytes": 1073741834,
           "filename_parameters": {
             "overall_prefix": "fake_minidaqapp",
             "digits_for_run_number": 6,

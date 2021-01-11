@@ -303,6 +303,7 @@
                                 "file_index_prefix": "file",
                                 "overall_prefix": "fake_minidaqapp"
                             },
+                            "max_file_size_bytes": 1073741834,
                             "mode": "all-per-file",
                             "name": "data_store",
                             "type": "HDF5DataStore"
