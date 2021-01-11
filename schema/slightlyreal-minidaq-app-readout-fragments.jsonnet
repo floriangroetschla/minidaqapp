@@ -4,12 +4,6 @@ local cmd = import "appfwk-cmd-make.jsonnet";
 local NUMBER_OF_FAKE_DATA_PRODUCERS = 1;
 local SIMULATION_SLOWDOWN_FACTOR = 1;
 
-local fdp_ns = {
-  generate_config_params(linkno=1) :: {
-    temporarily_hacked_link_number: linkno
-  },
-};
-
 local qdict = {
   time_sync_q: cmd.qspec("time_sync_q", "FollyMPMCQueue", 100),
   trigger_inhibit_q: cmd.qspec("trigger_inhibit_q", "FollySPSCQueue", 20),
@@ -73,17 +67,14 @@ local qspec_list = [
   )
   { waitms: 1000 },
 
-  cmd.conf([cmd.mcmd("ftss",
-    {
-      "sync_interval_ticks": 64000000
-    }),
+  cmd.conf([
     cmd.mcmd("tde",
       {
         "links" : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         "min_links_in_request" : NUMBER_OF_FAKE_DATA_PRODUCERS,
         "max_links_in_request" : NUMBER_OF_FAKE_DATA_PRODUCERS,
         "min_readout_window_ticks" : 320000,
-        "max_readout_window_ticks" : 320000, 
+        "max_readout_window_ticks" : 320000,
         "trigger_interval_ticks" : 64000000,
         "clock_frequency_hz" : 50000000/SIMULATION_SLOWDOWN_FACTOR
       }),
@@ -124,10 +115,7 @@ local qspec_list = [
         "apa_number": 0,
         "link_number": 1
       }),
-  ] +
-    [cmd.mcmd("fdp"+idx, fdp_ns.generate_config_params(idx))
-      for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
-    ]) { waitms: 1000 },
+  ]) { waitms: 1000 },
 
   cmd.start(42) { waitms: 1000 },
 
