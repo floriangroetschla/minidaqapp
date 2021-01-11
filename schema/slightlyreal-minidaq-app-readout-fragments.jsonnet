@@ -2,7 +2,9 @@ local moo = import "moo.jsonnet";
 local cmd = import "appfwk-cmd-make.jsonnet";
 
 local NUMBER_OF_FAKE_DATA_PRODUCERS = 1;
-local SIMULATION_SLOWDOWN_FACTOR = 1;
+// The factor by which to slow down data production in the
+// FakeCardReader, in case the machine can't keep up
+local DATA_RATE_SLOWDOWN_FACTOR = 1;
 
 local qdict = {
   time_sync_q: cmd.qspec("time_sync_q", "FollyMPMCQueue", 100),
@@ -76,11 +78,11 @@ local qspec_list = [
         "min_readout_window_ticks" : 320000,
         "max_readout_window_ticks" : 320000,
         // We divide the trigger interval by
-        // SIMULATION_SLOWDOWN_FACTOR so the triggers are still
+        // DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
         // emitted once per (wall-clock) second, rather than being
         // spaced out further
-        "trigger_interval_ticks" : std.floor(50000000/SIMULATION_SLOWDOWN_FACTOR),
-        "clock_frequency_hz" : 50000000/SIMULATION_SLOWDOWN_FACTOR
+        "trigger_interval_ticks" : std.floor(50000000/DATA_RATE_SLOWDOWN_FACTOR),
+        "clock_frequency_hz" : 50000000/DATA_RATE_SLOWDOWN_FACTOR
       }),
     cmd.mcmd("datawriter",
       {
@@ -104,7 +106,7 @@ local qspec_list = [
       {
         "link_id": 0,
         "input_limit": 10485100,
-        "rate_khz": 2000000/1000/12/SIMULATION_SLOWDOWN_FACTOR,
+        "rate_khz": 2000000/1000/12/DATA_RATE_SLOWDOWN_FACTOR,
         "raw_type": "wib",
         "data_filename": "/tmp/frames.bin",
         "queue_timeout_ms": 2000
