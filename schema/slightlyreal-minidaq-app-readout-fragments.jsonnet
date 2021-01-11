@@ -4,7 +4,7 @@ local cmd = import "appfwk-cmd-make.jsonnet";
 local NUMBER_OF_FAKE_DATA_PRODUCERS = 1;
 // The factor by which to slow down data production in the
 // FakeCardReader, in case the machine can't keep up
-local DATA_RATE_SLOWDOWN_FACTOR = 1;
+local DATA_RATE_SLOWDOWN_FACTOR = 100;
 
 local qdict = {
   time_sync_q: cmd.qspec("time_sync_q", "FollyMPMCQueue", 100),
@@ -75,8 +75,10 @@ local qspec_list = [
         "links" : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         "min_links_in_request" : NUMBER_OF_FAKE_DATA_PRODUCERS,
         "max_links_in_request" : NUMBER_OF_FAKE_DATA_PRODUCERS,
-        "min_readout_window_ticks" : 320000,
-        "max_readout_window_ticks" : 320000,
+        "min_readout_window_ticks" : 1200,
+        "max_readout_window_ticks" : 1200,
+        "trigger_window_offset" : 600,
+        "trigger_delay_ticks" : 20000,
         // We divide the trigger interval by
         // DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
         // emitted once per (wall-clock) second, rather than being
@@ -106,7 +108,7 @@ local qspec_list = [
       {
         "link_id": 0,
         "input_limit": 10485100,
-        "rate_khz": 2000000/1000/12/DATA_RATE_SLOWDOWN_FACTOR,
+        "rate_khz": 2000000/12/DATA_RATE_SLOWDOWN_FACTOR/1000,
         "raw_type": "wib",
         "data_filename": "/tmp/frames.bin",
         "queue_timeout_ms": 2000

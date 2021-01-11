@@ -197,7 +197,7 @@
             "modules": [
                 {
                     "data": {
-                        "clock_frequency_hz": 50000000,
+                        "clock_frequency_hz": 500000,
                         "links": [
                             0,
                             1,
@@ -211,10 +211,12 @@
                             9
                         ],
                         "max_links_in_request": 1,
-                        "max_readout_window_ticks": 320000,
+                        "max_readout_window_ticks": 1200,
                         "min_links_in_request": 1,
-                        "min_readout_window_ticks": 320000,
-                        "trigger_interval_ticks": 50000000
+                        "min_readout_window_ticks": 1200,
+                        "trigger_delay_ticks": 20000,
+                        "trigger_interval_ticks": 500000,
+                        "trigger_window_offset": 600
                     },
                     "match": "tde"
                 },
@@ -244,7 +246,7 @@
                         "input_limit": 10485100,
                         "link_id": 0,
                         "queue_timeout_ms": 2000,
-                        "rate_khz": 166.66666666666666,
+                        "rate_khz": 1.6666666666666665,
                         "raw_type": "wib"
                     },
                     "match": "fake-source"
