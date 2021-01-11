@@ -9,3 +9,5 @@
 moo -M "`pwd`/../../appfwk/schema" compile slightlyreal-minidaq-app.jsonnet > ../test/slightlyreal-minidaq-app.json
 
 moo -M "`pwd`/../../appfwk/schema" compile fake-minidaq-app.jsonnet > ../test/fake-minidaq-app.json
+
+moo -M "`pwd`/../../appfwk/schema" compile minidaq-app-fake-readout.jsonnet > ../test/minidaq-app-fake-readout.json
