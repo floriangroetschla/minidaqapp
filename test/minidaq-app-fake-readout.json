@@ -251,16 +251,18 @@
                 },
                 {
                     "data": {
-                        "clock_frequency_hz": 50000000,
+                        "clock_frequency_hz": 500000,
                         "links": [
                             0,
                             1
                         ],
                         "max_links_in_request": 2,
-                        "max_readout_window_ticks": 320000,
+                        "max_readout_window_ticks": 1200,
                         "min_links_in_request": 2,
-                        "min_readout_window_ticks": 320000,
-                        "trigger_interval_ticks": 64000000
+                        "min_readout_window_ticks": 1200,
+                        "trigger_delay_ticks": 20000,
+                        "trigger_interval_ticks": 500000,
+                        "trigger_window_offset": 600
                     },
                     "match": "tde"
                 },
@@ -283,8 +285,6 @@
                 },
                 {
                     "data": {
-                        "decision_loop_counter": 1,
-                        "fragment_loop_counter": 0,
                         "general_queue_timeout": 100,
                         "max_timestamp_diff": 50000000
                     },
@@ -319,7 +319,7 @@
                             1
                         ],
                         "queue_timeout_ms": 2000,
-                        "rate_khz": 166,
+                        "rate_khz": 1.6666666666666665,
                         "raw_type": "wib"
                     },
                     "match": "fake-source"
@@ -358,7 +358,7 @@
             "modules": [
                 {
                     "data": {
-                        "run": 42
+                        "run": 0
                     },
                     "match": ""
                 }
