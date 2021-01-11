@@ -197,12 +197,6 @@
             "modules": [
                 {
                     "data": {
-                        "sync_interval_ticks": 64000000
-                    },
-                    "match": "ftss"
-                },
-                {
-                    "data": {
                         "clock_frequency_hz": 50000000,
                         "links": [
                             0,
@@ -220,7 +214,7 @@
                         "max_readout_window_ticks": 320000,
                         "min_links_in_request": 1,
                         "min_readout_window_ticks": 320000,
-                        "trigger_interval_ticks": 64000000
+                        "trigger_interval_ticks": 50000000
                     },
                     "match": "tde"
                 },
@@ -266,12 +260,6 @@
                         "source_queue_timeout_ms": 2000
                     },
                     "match": "fake-handler"
-                },
-                {
-                    "data": {
-                        "temporarily_hacked_link_number": 1
-                    },
-                    "match": "fdp1"
                 }
             ]
         },

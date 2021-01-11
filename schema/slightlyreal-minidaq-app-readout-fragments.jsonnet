@@ -75,7 +75,11 @@ local qspec_list = [
         "max_links_in_request" : NUMBER_OF_FAKE_DATA_PRODUCERS,
         "min_readout_window_ticks" : 320000,
         "max_readout_window_ticks" : 320000,
-        "trigger_interval_ticks" : 64000000,
+        // We divide the trigger interval by
+        // SIMULATION_SLOWDOWN_FACTOR so the triggers are still
+        // emitted once per (wall-clock) second, rather than being
+        // spaced out further
+        "trigger_interval_ticks" : std.floor(50000000/SIMULATION_SLOWDOWN_FACTOR),
         "clock_frequency_hz" : 50000000/SIMULATION_SLOWDOWN_FACTOR
       }),
     cmd.mcmd("datawriter",
