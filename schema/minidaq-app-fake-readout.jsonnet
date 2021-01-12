@@ -132,7 +132,7 @@ local qspec_list = [
       {
         "raw_type": "wib",
         "source_queue_timeout_ms": 3000,
-        "latency_buffer_size": 2000000,
+        "latency_buffer_size": 1000000,
         "pop_limit_pct": 0.8,
         "pop_size_pct": 0.1,
         "apa_number": 0,
