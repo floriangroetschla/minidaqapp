@@ -4,7 +4,7 @@ local cmd = import "appfwk-cmd-make.jsonnet";
 local NUMBER_OF_DATA_PRODUCERS = 2;
 // The factor by which to slow down data production in the
 // FakeCardReader, in case the machine can't keep up
-local DATA_RATE_SLOWDOWN_FACTOR = 100;
+local DATA_RATE_SLOWDOWN_FACTOR = 1;
 
 local qdict = {
   time_sync_q: cmd.qspec("time_sync_q", "FollyMPMCQueue", 100),
@@ -70,10 +70,7 @@ local qspec_list = [
   )
   { waitms: 1000 },
 
-  cmd.conf([cmd.mcmd("ftss",
-    {
-      "sync_interval_ticks": 64000000
-    }),
+  cmd.conf([
     cmd.mcmd("tde",
       {
         "links" : [idx
@@ -82,14 +79,14 @@ local qspec_list = [
         "max_links_in_request" : NUMBER_OF_DATA_PRODUCERS,
         "min_readout_window_ticks" : 1200,
         "max_readout_window_ticks" : 1200,
-        "trigger_window_offset" : 600,
-        "trigger_delay_ticks" : 20000,
+        "trigger_window_offset" : 1000,
+        "trigger_delay_ticks" : 50000000,
         // We divide the trigger interval by
         // DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
         // emitted once per (wall-clock) second, rather than being
         // spaced out further
-        "trigger_interval_ticks" : std.floor(50000000/DATA_RATE_SLOWDOWN_FACTOR),
-        "clock_frequency_hz" : 50000000/DATA_RATE_SLOWDOWN_FACTOR
+        "trigger_interval_ticks" : std.floor(100000000/DATA_RATE_SLOWDOWN_FACTOR),
+        "clock_frequency_hz" : 100000000/DATA_RATE_SLOWDOWN_FACTOR
       }),
     cmd.mcmd("rqg",
                 {
@@ -106,7 +103,7 @@ local qspec_list = [
         "data_store_parameters": {
           "name" : "data_store",
           "type" : "HDF5DataStore",
-          "directory_path": ".",
+          "directory_path": "/tmp/",
           "mode": "all-per-file",
           "max_file_size_bytes": 1073741834,
           "filename_parameters": {
@@ -128,23 +125,23 @@ local qspec_list = [
         "rate_khz": 2000000/12/DATA_RATE_SLOWDOWN_FACTOR/1000,
         "raw_type": "wib",
         "data_filename": "/tmp/frames.bin",
-        "queue_timeout_ms": 2000
+        "queue_timeout_ms": 3000
       }),
     ] +
     [cmd.mcmd("datahandler_"+idx,
       {
         "raw_type": "wib",
-        "source_queue_timeout_ms": 2000,
-        "latency_buffer_size": 100000,
+        "source_queue_timeout_ms": 3000,
+        "latency_buffer_size": 2000000,
         "pop_limit_pct": 0.8,
-        "pop_size_pct": 0.3,
+        "pop_size_pct": 0.1,
         "apa_number": 0,
         "link_number": idx
       })
       for idx in std.range(0, NUMBER_OF_DATA_PRODUCERS-1)
     ]) { waitms: 1000 },
 
-  cmd.start(0) { waitms: 1000 },
+  cmd.start(333) { waitms: 1000 },
 
   cmd.stop() { waitms: 1000 },
 ]
