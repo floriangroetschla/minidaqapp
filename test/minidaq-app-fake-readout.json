@@ -52,6 +52,46 @@
                                 "dir": "output",
                                 "inst": "data_requests_1",
                                 "name": "data_request_1_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_2",
+                                "name": "data_request_2_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_3",
+                                "name": "data_request_3_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_4",
+                                "name": "data_request_4_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_5",
+                                "name": "data_request_5_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_6",
+                                "name": "data_request_6_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_7",
+                                "name": "data_request_7_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_8",
+                                "name": "data_request_8_output_queue"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_requests_9",
+                                "name": "data_request_9_output_queue"
                             }
                         ]
                     },
@@ -116,6 +156,46 @@
                                 "dir": "output",
                                 "inst": "fake_link_1",
                                 "name": "output_1"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_2",
+                                "name": "output_2"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_3",
+                                "name": "output_3"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_4",
+                                "name": "output_4"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_5",
+                                "name": "output_5"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_6",
+                                "name": "output_6"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_7",
+                                "name": "output_7"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_8",
+                                "name": "output_8"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "fake_link_9",
+                                "name": "output_9"
                             }
                         ]
                     },
@@ -177,6 +257,230 @@
                     },
                     "inst": "datahandler_1",
                     "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_2",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_2",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_2",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_3",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_3",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_3",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_4",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_4",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_4",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_5",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_5",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_5",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_6",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_6",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_6",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_7",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_7",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_7",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_8",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_8",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_8",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fake_link_9",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
+                                "dir": "input",
+                                "inst": "data_requests_9",
+                                "name": "requests"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "data_fragments_q",
+                                "name": "fragments"
+                            }
+                        ]
+                    },
+                    "inst": "datahandler_9",
+                    "plugin": "DataLinkHandler"
                 }
             ],
             "queues": [
@@ -196,6 +500,46 @@
                     "kind": "FollySPSCQueue"
                 },
                 {
+                    "capacity": 20,
+                    "inst": "data_requests_2",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_3",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_4",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_5",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_6",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_7",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_8",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 20,
+                    "inst": "data_requests_9",
+                    "kind": "FollySPSCQueue"
+                },
+                {
                     "capacity": 100000,
                     "inst": "fake_link_0",
                     "kind": "FollySPSCQueue"
@@ -203,6 +547,46 @@
                 {
                     "capacity": 100000,
                     "inst": "fake_link_1",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_2",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_3",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_4",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_5",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_6",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_7",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_8",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fake_link_9",
                     "kind": "FollySPSCQueue"
                 },
                 {
@@ -245,17 +629,25 @@
             "modules": [
                 {
                     "data": {
-                        "clock_frequency_hz": 100000000,
+                        "clock_frequency_hz": 5000000,
                         "links": [
                             0,
-                            1
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9
                         ],
-                        "max_links_in_request": 2,
+                        "max_links_in_request": 10,
                         "max_readout_window_ticks": 1200,
-                        "min_links_in_request": 2,
+                        "min_links_in_request": 10,
                         "min_readout_window_ticks": 1200,
-                        "trigger_delay_ticks": 50000000,
-                        "trigger_interval_ticks": 100000000,
+                        "trigger_delay_ticks": 10000000,
+                        "trigger_interval_ticks": 15000000,
                         "trigger_window_offset": 1000
                     },
                     "match": "tde"
@@ -272,6 +664,46 @@
                                 "apa": 0,
                                 "link": 1,
                                 "queueinstance": "data_requests_1"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 2,
+                                "queueinstance": "data_requests_2"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 3,
+                                "queueinstance": "data_requests_3"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 4,
+                                "queueinstance": "data_requests_4"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 5,
+                                "queueinstance": "data_requests_5"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 6,
+                                "queueinstance": "data_requests_6"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 7,
+                                "queueinstance": "data_requests_7"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 8,
+                                "queueinstance": "data_requests_8"
+                            },
+                            {
+                                "apa": 0,
+                                "link": 9,
+                                "queueinstance": "data_requests_9"
                             }
                         ]
                     },
@@ -311,10 +743,18 @@
                         "input_limit": 10485100,
                         "link_ids": [
                             0,
-                            1
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9
                         ],
-                        "queue_timeout_ms": 3000,
-                        "rate_khz": 166.66666666666666,
+                        "queue_timeout_ms": 1000,
+                        "rate_khz": 16.666666666666668,
                         "raw_type": "wib"
                     },
                     "match": "fake-source"
@@ -322,7 +762,7 @@
                 {
                     "data": {
                         "apa_number": 0,
-                        "latency_buffer_size": 1000000,
+                        "latency_buffer_size": 50000,
                         "link_number": 0,
                         "pop_limit_pct": 0.8,
                         "pop_size_pct": 0.1,
@@ -334,7 +774,7 @@
                 {
                     "data": {
                         "apa_number": 0,
-                        "latency_buffer_size": 1000000,
+                        "latency_buffer_size": 50000,
                         "link_number": 1,
                         "pop_limit_pct": 0.8,
                         "pop_size_pct": 0.1,
@@ -342,6 +782,102 @@
                         "source_queue_timeout_ms": 3000
                     },
                     "match": "datahandler_1"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 2,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_2"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 3,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_3"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 4,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_4"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 5,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_5"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 6,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_6"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 7,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_7"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 8,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_8"
+                },
+                {
+                    "data": {
+                        "apa_number": 0,
+                        "latency_buffer_size": 50000,
+                        "link_number": 9,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.1,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 3000
+                    },
+                    "match": "datahandler_9"
                 }
             ]
         },
@@ -372,6 +908,44 @@
             ]
         },
         "id": "stop",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": ""
+                }
+            ]
+        },
+        "id": "pause",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {
+                        "trigger_interval_ticks": 5000000
+                    },
+                    "match": "tde"
+                }
+            ]
+        },
+        "id": "resume",
+        "waitms": 1000
+    },
+    {
+        "data": {
+            "modules": [
+                {
+                    "data": {},
+                    "match": ""
+                }
+            ]
+        },
+        "id": "scrap",
         "waitms": 1000
     }
 ]

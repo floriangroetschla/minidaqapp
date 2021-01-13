@@ -1,10 +1,13 @@
 local moo = import "moo.jsonnet";
-local cmd = import "appfwk-cmd-make.jsonnet";
+local cmd = import "minidaqapp-cmd-make.jsonnet";
 
-local NUMBER_OF_DATA_PRODUCERS = 2;
+local NUMBER_OF_DATA_PRODUCERS = 10;
 // The factor by which to slow down data production in the
 // FakeCardReader, in case the machine can't keep up
-local DATA_RATE_SLOWDOWN_FACTOR = 1;
+local DATA_RATE_SLOWDOWN_FACTOR = 10;
+
+// local clock speed Hz
+local CLOCK_SPEED_HZ = 50000000;
 
 local qdict = {
   time_sync_q: cmd.qspec("time_sync_q", "FollyMPMCQueue", 100),
@@ -80,13 +83,14 @@ local qspec_list = [
         "min_readout_window_ticks" : 1200,
         "max_readout_window_ticks" : 1200,
         "trigger_window_offset" : 1000,
-        "trigger_delay_ticks" : 50000000,
+        // The delay is set to put the trigger well within the latency buff
+        "trigger_delay_ticks" : std.floor( 2* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
         // We divide the trigger interval by
         // DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
-        // emitted once per (wall-clock) second, rather than being
+        // emitted per (wall-clock) second, rather than being
         // spaced out further
-        "trigger_interval_ticks" : std.floor(100000000/DATA_RATE_SLOWDOWN_FACTOR),
-        "clock_frequency_hz" : 100000000/DATA_RATE_SLOWDOWN_FACTOR
+        "trigger_interval_ticks" : std.floor( 3* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+        "clock_frequency_hz" : CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR
       }),
     cmd.mcmd("rqg",
                 {
@@ -122,17 +126,18 @@ local qspec_list = [
         "link_ids": [idx
           for idx in std.range(0, NUMBER_OF_DATA_PRODUCERS-1)],
         "input_limit": 10485100,
-        "rate_khz": 2000000/12/DATA_RATE_SLOWDOWN_FACTOR/1000,
+        "rate_khz": CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
         "raw_type": "wib",
         "data_filename": "/tmp/frames.bin",
-        "queue_timeout_ms": 3000
+        "queue_timeout_ms": 1000
       }),
     ] +
     [cmd.mcmd("datahandler_"+idx,
       {
+        // The latency buffer is dimensioned to hold enough data to respond to the trigger (3 sec)
         "raw_type": "wib",
         "source_queue_timeout_ms": 3000,
-        "latency_buffer_size": 1000000,
+        "latency_buffer_size": 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
         "pop_limit_pct": 0.8,
         "pop_size_pct": 0.1,
         "apa_number": 0,
@@ -144,4 +149,15 @@ local qspec_list = [
   cmd.start(333) { waitms: 1000 },
 
   cmd.stop() { waitms: 1000 },
+
+  cmd.pause() { waitms: 1000 },
+
+  cmd.resume([
+    cmd.mcmd("tde",
+      {
+        "trigger_interval_ticks" : std.floor( 1* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+      }),
+  ]) { waitms: 1000 },
+
+  cmd.scrap() { waitms: 1000 },
 ]
