@@ -1,7 +1,7 @@
 local moo = import "moo.jsonnet";
 local cmd = import "minidaqapp-cmd-make.jsonnet";
 
-local NUMBER_OF_DATA_PRODUCERS = 10;
+local NUMBER_OF_DATA_PRODUCERS = 2;
 // The factor by which to slow down data production in the
 // FakeCardReader, in case the machine can't keep up
 local DATA_RATE_SLOWDOWN_FACTOR = 10;
@@ -136,6 +136,7 @@ local qspec_list = [
       {
         // The latency buffer is dimensioned to hold enough data to respond to the trigger (3 sec)
         "raw_type": "wib",
+        "fake_trigger_flag": 0,
         "source_queue_timeout_ms": 3000,
         "latency_buffer_size": 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
         "pop_limit_pct": 0.8,
