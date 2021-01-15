@@ -16,12 +16,17 @@ local qdict = {
     trigdec_for_dataflow_bookkeeping: cmd.qspec("trigger_decision_copy_for_bookkeeping", "FollySPSCQueue", 20),
     trigdec_for_inhibit: cmd.qspec("trigger_decision_copy_for_inhibit", "FollySPSCQueue", 20),
     trigger_record_q: cmd.qspec("trigger_record_q", "FollySPSCQueue", 20),
+    fake_link: cmd.qspec("fakelink-0", "FollySPSCQueue",  100000),
 } + {
     ["data_requests_"+idx]: cmd.qspec("data_requests_"+idx, "FollySPSCQueue", 20),
     for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
 } + {
     ["data_fragments_"+idx]: cmd.qspec("data_fragments_"+idx, "FollySPSCQueue", 20),
     for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
+} + {
+    // PAR 2021-01-07: These two are temporary, just to keep the modules from readout happy
+    requests_in: cmd.qspec("requests-in", "FollyMPMCQueue",  1000),
+    frags_out: cmd.qspec("frags-out", "FollyMPMCQueue",  1000),
 };
 
 local qspec_list = [
@@ -31,9 +36,7 @@ local qspec_list = [
 
 [
     cmd.init(qspec_list,
-             [cmd.mspec("ftss", "FakeTimeSyncSource",
-                  cmd.qinfo("time_sync_sink", qdict.time_sync_q.inst, cmd.qdir.output)),
-              cmd.mspec("tde", "TriggerDecisionEmulator", [
+             [cmd.mspec("tde", "TriggerDecisionEmulator", [
                   cmd.qinfo("time_sync_source", qdict.time_sync_q.inst, "input"),
                   cmd.qinfo("trigger_inhibit_source", qdict.trigger_inhibit_q.inst, "input"),
                   cmd.qinfo("trigger_decision_sink", qdict.trigger_decision_q.inst, "output")]),
@@ -53,7 +56,13 @@ local qspec_list = [
               cmd.mspec("datawriter", "DataWriter", [
                   cmd.qinfo("trigger_record_input_queue", qdict.trigger_record_q.inst, "input"),
                   cmd.qinfo("trigger_decision_for_inhibit", qdict.trigdec_for_inhibit.inst, "input"),
-                  cmd.qinfo("trigger_inhibit_output_queue", qdict.trigger_inhibit_q.inst, "output")])] +
+                  cmd.qinfo("trigger_inhibit_output_queue", qdict.trigger_inhibit_q.inst, "output")]),
+              cmd.mspec("fake-source", "FakeCardReader",
+                  cmd.qinfo("output", qdict.fake_link.inst, cmd.qdir.output)),
+              cmd.mspec("fake-handler", "DataLinkHandler", [
+                  cmd.qinfo("input", qdict.fake_link.inst, cmd.qdir.input),
+                  cmd.qinfo("timesync", qdict.time_sync_q.inst, cmd.qdir.output)]),
+             ] +
               [cmd.mspec("fdp"+idx, "FakeDataProd", [
                    cmd.qinfo("data_request_input_queue", qdict["data_requests_"+idx].inst, "input"),
                    cmd.qinfo("data_fragment_output_queue", qdict["data_fragments_"+idx].inst, "output")])
@@ -92,7 +101,25 @@ local qspec_list = [
                       "digits_for_trigger_number": 5,
                     },
                   }
-                })] +
+                }),
+              cmd.mcmd("fake-source",
+                {
+                  "link_id": 0,
+                  "input_limit": 10485100,
+                  "rate_khz": 166,
+                  "raw_type": "wib",
+                  "data_filename": "/tmp/frames.bin",
+                  "queue_timeout_ms": 2000
+                }),
+              cmd.mcmd("fake-handler",
+                {
+                  "raw_type": "wib",
+                  "source_queue_timeout_ms": 2000,
+                  "latency_buffer_size": 100000,
+                  "pop_limit_pct": 0.8,
+                  "pop_size_pct": 0.3
+                }),
+    ] +
               [cmd.mcmd("fdp"+idx, fdp_ns.generate_config_params(idx))
                for idx in std.range(1, NUMBER_OF_FAKE_DATA_PRODUCERS)
               ]) { waitms: 1000 },

@@ -6,19 +6,6 @@
                     "data": {
                         "qinfos": [
                             {
-                                "dir": "output",
-                                "inst": "time_sync_q",
-                                "name": "time_sync_sink"
-                            }
-                        ]
-                    },
-                    "inst": "ftss",
-                    "plugin": "FakeTimeSyncSource"
-                },
-                {
-                    "data": {
-                        "qinfos": [
-                            {
                                 "dir": "input",
                                 "inst": "time_sync_q",
                                 "name": "time_sync_source"
@@ -60,16 +47,6 @@
                                 "dir": "output",
                                 "inst": "data_requests_1",
                                 "name": "data_request_1_output_queue"
-                            },
-                            {
-                                "dir": "output",
-                                "inst": "data_requests_2",
-                                "name": "data_request_2_output_queue"
-                            },
-                            {
-                                "dir": "output",
-                                "inst": "data_requests_3",
-                                "name": "data_request_3_output_queue"
                             }
                         ]
                     },
@@ -93,16 +70,6 @@
                                 "dir": "input",
                                 "inst": "data_fragments_1",
                                 "name": "data_fragment_1_input_queue"
-                            },
-                            {
-                                "dir": "input",
-                                "inst": "data_fragments_2",
-                                "name": "data_fragment_2_input_queue"
-                            },
-                            {
-                                "dir": "input",
-                                "inst": "data_fragments_3",
-                                "name": "data_fragment_3_input_queue"
                             }
                         ]
                     },
@@ -136,55 +103,42 @@
                     "data": {
                         "qinfos": [
                             {
+                                "dir": "output",
+                                "inst": "fakelink-0",
+                                "name": "output"
+                            }
+                        ]
+                    },
+                    "inst": "fake-source",
+                    "plugin": "FakeCardReader"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fakelink-0",
+                                "name": "raw-input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            },
+                            {
                                 "dir": "input",
                                 "inst": "data_requests_1",
-                                "name": "data_request_input_queue"
+                                "name": "requests"
                             },
                             {
                                 "dir": "output",
                                 "inst": "data_fragments_1",
-                                "name": "data_fragment_output_queue"
+                                "name": "fragments"
                             }
                         ]
                     },
-                    "inst": "fdp1",
-                    "plugin": "FakeDataProd"
-                },
-                {
-                    "data": {
-                        "qinfos": [
-                            {
-                                "dir": "input",
-                                "inst": "data_requests_2",
-                                "name": "data_request_input_queue"
-                            },
-                            {
-                                "dir": "output",
-                                "inst": "data_fragments_2",
-                                "name": "data_fragment_output_queue"
-                            }
-                        ]
-                    },
-                    "inst": "fdp2",
-                    "plugin": "FakeDataProd"
-                },
-                {
-                    "data": {
-                        "qinfos": [
-                            {
-                                "dir": "input",
-                                "inst": "data_requests_3",
-                                "name": "data_request_input_queue"
-                            },
-                            {
-                                "dir": "output",
-                                "inst": "data_fragments_3",
-                                "name": "data_fragment_output_queue"
-                            }
-                        ]
-                    },
-                    "inst": "fdp3",
-                    "plugin": "FakeDataProd"
+                    "inst": "fake-handler",
+                    "plugin": "DataLinkHandler"
                 }
             ],
             "queues": [
@@ -195,27 +149,12 @@
                 },
                 {
                     "capacity": 20,
-                    "inst": "data_fragments_2",
-                    "kind": "FollySPSCQueue"
-                },
-                {
-                    "capacity": 20,
-                    "inst": "data_fragments_3",
-                    "kind": "FollySPSCQueue"
-                },
-                {
-                    "capacity": 20,
                     "inst": "data_requests_1",
                     "kind": "FollySPSCQueue"
                 },
                 {
-                    "capacity": 20,
-                    "inst": "data_requests_2",
-                    "kind": "FollySPSCQueue"
-                },
-                {
-                    "capacity": 20,
-                    "inst": "data_requests_3",
+                    "capacity": 100000,
+                    "inst": "fakelink-0",
                     "kind": "FollySPSCQueue"
                 },
                 {
@@ -258,13 +197,7 @@
             "modules": [
                 {
                     "data": {
-                        "sync_interval_ticks": 64000000
-                    },
-                    "match": "ftss"
-                },
-                {
-                    "data": {
-                        "clock_frequency_hz": 50000000,
+                        "clock_frequency_hz": 500000,
                         "links": [
                             0,
                             1,
@@ -277,11 +210,13 @@
                             8,
                             9
                         ],
-                        "max_links_in_request": 3,
-                        "max_readout_window_ticks": 320000,
-                        "min_links_in_request": 3,
-                        "min_readout_window_ticks": 320000,
-                        "trigger_interval_ticks": 64000000
+                        "max_links_in_request": 1,
+                        "max_readout_window_ticks": 1200,
+                        "min_links_in_request": 1,
+                        "min_readout_window_ticks": 1200,
+                        "trigger_delay_ticks": 20000,
+                        "trigger_interval_ticks": 500000,
+                        "trigger_window_offset": 600
                     },
                     "match": "tde"
                 },
@@ -307,21 +242,26 @@
                 },
                 {
                     "data": {
-                        "temporarily_hacked_link_number": 1
+                        "data_filename": "/tmp/frames.bin",
+                        "input_limit": 10485100,
+                        "link_id": 0,
+                        "queue_timeout_ms": 2000,
+                        "rate_khz": 1.6666666666666665,
+                        "raw_type": "wib"
                     },
-                    "match": "fdp1"
+                    "match": "fake-source"
                 },
                 {
                     "data": {
-                        "temporarily_hacked_link_number": 2
+                        "apa_number": 0,
+                        "latency_buffer_size": 100000,
+                        "link_number": 1,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.3,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 2000
                     },
-                    "match": "fdp2"
-                },
-                {
-                    "data": {
-                        "temporarily_hacked_link_number": 3
-                    },
-                    "match": "fdp3"
+                    "match": "fake-handler"
                 }
             ]
         },
