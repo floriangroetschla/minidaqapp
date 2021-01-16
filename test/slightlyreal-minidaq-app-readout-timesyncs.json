@@ -6,19 +6,6 @@
                     "data": {
                         "qinfos": [
                             {
-                                "dir": "output",
-                                "inst": "time_sync_q",
-                                "name": "time_sync_sink"
-                            }
-                        ]
-                    },
-                    "inst": "ftss",
-                    "plugin": "FakeTimeSyncSource"
-                },
-                {
-                    "data": {
-                        "qinfos": [
-                            {
                                 "dir": "input",
                                 "inst": "time_sync_q",
                                 "name": "time_sync_source"
@@ -136,6 +123,37 @@
                     "data": {
                         "qinfos": [
                             {
+                                "dir": "output",
+                                "inst": "fakelink-0",
+                                "name": "output"
+                            }
+                        ]
+                    },
+                    "inst": "fake-source",
+                    "plugin": "FakeCardReader"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
+                                "dir": "input",
+                                "inst": "fakelink-0",
+                                "name": "input"
+                            },
+                            {
+                                "dir": "output",
+                                "inst": "time_sync_q",
+                                "name": "timesync"
+                            }
+                        ]
+                    },
+                    "inst": "fake-handler",
+                    "plugin": "DataLinkHandler"
+                },
+                {
+                    "data": {
+                        "qinfos": [
+                            {
                                 "dir": "input",
                                 "inst": "data_requests_1",
                                 "name": "data_request_input_queue"
@@ -217,6 +235,21 @@
                     "capacity": 20,
                     "inst": "data_requests_3",
                     "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 100000,
+                    "inst": "fakelink-0",
+                    "kind": "FollySPSCQueue"
+                },
+                {
+                    "capacity": 1000,
+                    "inst": "frags-out",
+                    "kind": "FollyMPMCQueue"
+                },
+                {
+                    "capacity": 1000,
+                    "inst": "requests-in",
+                    "kind": "FollyMPMCQueue"
                 },
                 {
                     "capacity": 100,
@@ -304,6 +337,27 @@
                         }
                     },
                     "match": "datawriter"
+                },
+                {
+                    "data": {
+                        "data_filename": "/tmp/frames.bin",
+                        "input_limit": 10485100,
+                        "link_id": 0,
+                        "queue_timeout_ms": 2000,
+                        "rate_khz": 166,
+                        "raw_type": "wib"
+                    },
+                    "match": "fake-source"
+                },
+                {
+                    "data": {
+                        "latency_buffer_size": 100000,
+                        "pop_limit_pct": 0.8,
+                        "pop_size_pct": 0.3,
+                        "raw_type": "wib",
+                        "source_queue_timeout_ms": 2000
+                    },
+                    "match": "fake-handler"
                 },
                 {
                     "data": {
