@@ -6,7 +6,7 @@
 # added to your software development environment.  If that has not already been
 # done, then you'll need to do that.
 #
-# Variables: NUMBER_OF_DATA_PRODUCERS, DATA_RATE_SLOWDOWN_FACTOR, CLOCK_SPEED_HZ, TRIGGER_RATE_HZ
+# Variables: NUMBER_OF_DATA_PRODUCERS, DATA_RATE_SLOWDOWN_FACTOR, RUN_NUMBER, TRIGGER_RATE_HZ
 #
 
-moo -M "`pwd`/../../appfwk/schema" -A TRIGGER_RATE_HZ=1.0 -A NUMBER_OF_DATA_PRODUCERS=2 -A DATA_RATE_SLOWDOWN_FACTOR=10 compile minidaq-app-fake-readout.jsonnet > ../test/minidaq-app-fake-readout.json
+moo -M "`pwd`/../../appfwk/schema" -A TRIGGER_RATE_HZ=1.0 -A RUN_NUMBER=333 -A NUMBER_OF_DATA_PRODUCERS=2 -A DATA_RATE_SLOWDOWN_FACTOR=10 compile minidaq-app-fake-readout.jsonnet > ../test/minidaq-app-fake-readout.json

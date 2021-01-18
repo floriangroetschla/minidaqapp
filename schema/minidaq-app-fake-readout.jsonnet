@@ -1,14 +1,17 @@
 local moo = import "moo.jsonnet";
 local cmd = import "minidaqapp-cmd-make.jsonnet";
 
+// Time to waait on pop()
 local QUEUE_POP_WAIT_MS=100;
+// local clock speed Hz
+local CLOCK_SPEED_HZ = 50000000;
 
 function(NUMBER_OF_DATA_PRODUCERS = 2,
          // The factor by which to slow down data production in the
          // FakeCardReader, in case the machine can't keep up
          DATA_RATE_SLOWDOWN_FACTOR = 10,
-         // local clock speed Hz
-         CLOCK_SPEED_HZ = 50000000, TRIGGER_RATE_HZ = 1.0) {
+         RUN_NUMBER = 333, 
+         TRIGGER_RATE_HZ = 1.0) {
 
     local qdict = {
         time_sync_q: cmd.qspec("time_sync_q", "FollyMPMCQueue", 100),
@@ -148,9 +151,23 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                   for idx in std.range(0, NUMBER_OF_DATA_PRODUCERS-1)
                   ]) { waitms: 1000 },
 
-        cmd.start(333) { waitms: 1000 },
+        cmd.start([
+            cmd.mcmd("datawriter", {"run": RUN_NUMBER}),
+            cmd.mcmd("ffr", {"run": RUN_NUMBER}),
+            cmd.mcmd("datahandler_.*", {"run": RUN_NUMBER}),
+            cmd.mcmd("fake-source", {"run": RUN_NUMBER}),
+            cmd.mcmd("rqg", {"run": RUN_NUMBER}),
+            cmd.mcmd("tde", {"run": RUN_NUMBER}),
+        ]) { waitms: 1000 },
 
-        cmd.stop() { waitms: 1000 },
+        cmd.stop([
+            cmd.mcmd("tde", {}),
+            cmd.mcmd("rqg", {}),
+            cmd.mcmd("fake-source", {}),
+            cmd.mcmd("datahandler_.*", {}),
+            cmd.mcmd("ffr", {}),
+            cmd.mcmd("datawriter", {}),
+        ]) { waitms: 1000 },
 
         cmd.pause() { waitms: 1000 },
 

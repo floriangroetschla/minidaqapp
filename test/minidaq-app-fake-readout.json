@@ -357,7 +357,37 @@
                     "data": {
                         "run": 333
                     },
-                    "match": ""
+                    "match": "datawriter"
+                },
+                {
+                    "data": {
+                        "run": 333
+                    },
+                    "match": "ffr"
+                },
+                {
+                    "data": {
+                        "run": 333
+                    },
+                    "match": "datahandler_.*"
+                },
+                {
+                    "data": {
+                        "run": 333
+                    },
+                    "match": "fake-source"
+                },
+                {
+                    "data": {
+                        "run": 333
+                    },
+                    "match": "rqg"
+                },
+                {
+                    "data": {
+                        "run": 333
+                    },
+                    "match": "tde"
                 }
             ]
         },
@@ -369,7 +399,27 @@
             "modules": [
                 {
                     "data": {},
-                    "match": ""
+                    "match": "tde"
+                },
+                {
+                    "data": {},
+                    "match": "rqg"
+                },
+                {
+                    "data": {},
+                    "match": "fake-source"
+                },
+                {
+                    "data": {},
+                    "match": "datahandler_.*"
+                },
+                {
+                    "data": {},
+                    "match": "ffr"
+                },
+                {
+                    "data": {},
+                    "match": "datawriter"
                 }
             ]
         },
