@@ -1,12 +1,14 @@
 local moo = import "moo.jsonnet";
 local cmd = import "minidaqapp-cmd-make.jsonnet";
 
+local QUEUE_POP_WAIT_MS=100;
+
 function(NUMBER_OF_DATA_PRODUCERS = 2,
          // The factor by which to slow down data production in the
          // FakeCardReader, in case the machine can't keep up
          DATA_RATE_SLOWDOWN_FACTOR = 10,
          // local clock speed Hz
-         CLOCK_SPEED_HZ = 50000000) {
+         CLOCK_SPEED_HZ = 50000000, TRIGGER_RATE_HZ = 1.0) {
 
     local qdict = {
         time_sync_q: cmd.qspec("time_sync_q", "FollyMPMCQueue", 100),
@@ -88,7 +90,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                          // DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
                          // emitted per (wall-clock) second, rather than being
                          // spaced out further
-                         "trigger_interval_ticks" : std.floor( 3* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+                         "trigger_interval_ticks" : std.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
                          "clock_frequency_hz" : CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR
                      }),
             cmd.mcmd("rqg",
@@ -98,7 +100,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                      }),
             cmd.mcmd("ffr",
                      {
-                         "general_queue_timeout" : 100,
+                         "general_queue_timeout" : QUEUE_POP_WAIT_MS,
                          "max_timestamp_diff" : 50000000
                      }),
             cmd.mcmd("datawriter",
@@ -106,7 +108,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                          "data_store_parameters": {
                              "name" : "data_store",
                              "type" : "HDF5DataStore",
-                             "directory_path": "/tmp/",
+                             "directory_path": ".",
                              "mode": "all-per-file",
                              "max_file_size_bytes": 1073741834,
                              "filename_parameters": {
@@ -127,8 +129,8 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                          "input_limit": 10485100,
                          "rate_khz": CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
                          "raw_type": "wib",
-                         "data_filename": "/tmp/frames.bin",
-                         "queue_timeout_ms": 1000
+                         "data_filename": "./frames.bin",
+                         "queue_timeout_ms": QUEUE_POP_WAIT_MS
                      }),
         ] +
                  [cmd.mcmd("datahandler_"+idx,
@@ -136,7 +138,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                                // The latency buffer is dimensioned to hold enough data to respond to the trigger (3 sec)
                                "raw_type": "wib",
                                "fake_trigger_flag": 0,
-                               "source_queue_timeout_ms": 3000,
+                               "source_queue_timeout_ms": QUEUE_POP_WAIT_MS,
                                "latency_buffer_size": 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
                                "pop_limit_pct": 0.8,
                                "pop_size_pct": 0.1,
@@ -155,7 +157,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
         cmd.resume([
             cmd.mcmd("tde",
                      {
-                         "trigger_interval_ticks" : std.floor( 1* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+                         "trigger_interval_ticks" : std.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
                      }),
         ]) { waitms: 1000 },
 

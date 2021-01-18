@@ -255,7 +255,7 @@
                         "min_links_in_request": 2,
                         "min_readout_window_ticks": 1200,
                         "trigger_delay_ticks": 10000000,
-                        "trigger_interval_ticks": 15000000,
+                        "trigger_interval_ticks": 5000000,
                         "trigger_window_offset": 1000
                     },
                     "match": "tde"
@@ -287,7 +287,7 @@
                 {
                     "data": {
                         "data_store_parameters": {
-                            "directory_path": "/tmp/",
+                            "directory_path": ".",
                             "file_layout_parameters": {
                                 "digits_for_trigger_number": 5,
                                 "trigger_record_name_prefix": "TriggerRecord"
@@ -307,13 +307,13 @@
                 },
                 {
                     "data": {
-                        "data_filename": "/tmp/frames.bin",
+                        "data_filename": "./frames.bin",
                         "input_limit": 10485100,
                         "link_ids": [
                             0,
                             1
                         ],
-                        "queue_timeout_ms": 1000,
+                        "queue_timeout_ms": 100,
                         "rate_khz": 16.666666666666668,
                         "raw_type": "wib"
                     },
@@ -328,7 +328,7 @@
                         "pop_limit_pct": 0.8,
                         "pop_size_pct": 0.1,
                         "raw_type": "wib",
-                        "source_queue_timeout_ms": 3000
+                        "source_queue_timeout_ms": 100
                     },
                     "match": "datahandler_0"
                 },
@@ -341,7 +341,7 @@
                         "pop_limit_pct": 0.8,
                         "pop_size_pct": 0.1,
                         "raw_type": "wib",
-                        "source_queue_timeout_ms": 3000
+                        "source_queue_timeout_ms": 100
                     },
                     "match": "datahandler_1"
                 }
