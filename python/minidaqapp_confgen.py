@@ -39,8 +39,8 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
                         cmd.QueueInfo(name="linkdata", inst="time_sync_q", dir="input"),
-                        cmd.QueueInfo(name="trigger_inhibit_source", inst="trigger_inhibit_q", , dir="input"),
-                        cmd.QueueInfo(name="trigger_decision_sink", inst="trigger_decision_q", , dir="output"),
+                        cmd.QueueInfo(name="trigger_inhibit_source", inst="trigger_inhibit_q", dir="input"),
+                        cmd.QueueInfo(name="trigger_decision_sink", inst="trigger_decision_q", dir="output"),
                     ])
                 )
             ),
@@ -49,10 +49,10 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
                         cmd.QueueInfo(name="trigger_decision_input_queue", inst="trigger_decision_q", dir="input"),
-                        cmd.QueueInfo(name="trigger_decision_for_event_building", inst="trigger_decision_copy_for_bookkeeping", , dir="output"),
-                        cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigger_decision_copy_for_inhibit", , dir="output"),
+                        cmd.QueueInfo(name="trigger_decision_for_event_building", inst="trigger_decision_copy_for_bookkeeping", dir="output"),
+                        cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigger_decision_copy_for_inhibit", dir="output"),
                     ] + [
-                        cmd.QueueInfo(name=f"data_request_{idx}_output_queue", inst=f"data_requests_{idx}", , dir="output")
+                        cmd.QueueInfo(name=f"data_request_{idx}_output_queue", inst=f"data_requests_{idx}", dir="output")
                             for idx in range(NUMBER_OF_DATA_PRODUCERS),
                     ])
                 )
@@ -62,8 +62,8 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
                         cmd.QueueInfo(name="trigger_decision_input_queue", inst="trigger_decision_copy_for_bookkeeping", dir="input"),
-                        cmd.QueueInfo(name="trigger_record_output_queue", inst="trigger_record_q", , dir="output"),
-                        cmd.QueueInfo(name="data_fragment_input_queue", inst="data_fragments_q", , dir="input"),
+                        cmd.QueueInfo(name="trigger_record_output_queue", inst="trigger_record_q", dir="output"),
+                        cmd.QueueInfo(name="data_fragment_input_queue", inst="data_fragments_q", dir="input"),
                     ])
                 )
             ),   
@@ -72,8 +72,8 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
                         cmd.QueueInfo(name="trigger_record_input_queue", inst="trigger_record_q", dir="input"),
-                        cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigdec_for_inhibit", , dir="input"),
-                        cmd.QueueInfo(name="trigger_inhibit_output_queue", inst="trigger_inhibit_q", , dir="output"),
+                        cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigdec_for_inhibit", dir="input"),
+                        cmd.QueueInfo(name="trigger_inhibit_output_queue", inst="trigger_inhibit_q", dir="output"),
                     ])
                 )
             ), 
