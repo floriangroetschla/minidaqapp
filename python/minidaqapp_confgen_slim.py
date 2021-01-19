@@ -39,12 +39,9 @@ def mcmd(cmdid, mods):
     return cmd.Command(
         id=cmd.CmdId(cmdid),
         data=cmd.CmdObj(
-            data=cmd.CmdObj(
             modules=cmd.AddressedCmds(
-                cmd.AddressedCmd(
-                    )
+                cmd.AddressedCmd(match=m, data=o)
                 for m,o in mods
-                )
             )
         )
     )
@@ -264,33 +261,43 @@ def genconf(
     jstr = json.dumps(pausecmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nPause\n\n", jstr)
 
-    resumecmd = cmd.Command(
-        id=cmd.CmdId("resume"),
-            data=cmd.CmdObj(
-                modules=cmd.AddressedCmds([
-                        cmd.AddressedCmd(match="tde", data=tde.ResumeParams(
+    resumecmd = mcmd("resume", [
+            ("tde", tde.ResumeParams(
                             trigger_interval_ticks=trigger_interval_ticks
-                        )),
-                ])
-            )
-        )
+                        ))
+        ])
+    
+    # resumecmd = cmd.Command(
+    #     id=cmd.CmdId("resume"),
+    #         data=cmd.CmdObj(
+    #             modules=cmd.AddressedCmds([
+    #                     cmd.AddressedCmd(match="tde", data=tde.ResumeParams(
+    #                         trigger_interval_ticks=trigger_interval_ticks
+    #                     )),
+    #             ])
+    #         )
+    #     )
     
 
 
     jstr = json.dumps(resumecmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nResume\n\n", jstr)
 
-    scrapcmd = cmd.Command(
-        id=cmd.CmdId("scrap"),
-            data=cmd.CmdObj(
-                modules=cmd.AddressedCmds([
-                    cmd.AddressedCmd(
-                        match="",
-                        data=emptypars
-                   )]
-                )
-            )
-        )
+    scrapcmd = mcmd("scrap", [
+            ("", emptypars)
+        ])
+
+    # scrapcmd = cmd.Command(
+    #     id=cmd.CmdId("scrap"),
+    #         data=cmd.CmdObj(
+    #             modules=cmd.AddressedCmds([
+    #                 cmd.AddressedCmd(
+    #                     match="",
+    #                     data=emptypars
+    #                )]
+    #             )
+    #         )
+    #     )
 
 
     jstr = json.dumps(scrapcmd.pod(), indent=4, sort_keys=True)
