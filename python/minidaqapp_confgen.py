@@ -3,13 +3,13 @@ import moo.otypes
 
 from dunedaq.env import get_moo_model_path
 moo.otypes.load_types('appfwk-cmd-schema.jsonnet', get_moo_model_path())
-# moo.otypes.load_types('readout-DataLinkHandler-schema.jsonnet', get_moo_model_path())git 
+moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet', get_moo_model_path())git 
 # moo.otypes.load_types('readout-FelixCardReader-schema.jsonnet', get_moo_model_path())git 
 
 import json
 
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
-# import dunedaq.readout.datalinkhandler as ldh
+import dunedaq.trigemu.triggerdecisionemulator as tde
 # import dunedaq.readout.felixcardreader as fcr
 
 
@@ -104,6 +104,37 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
 
     jstr = json.dumps(appinit.pod(), indent=4, sort_keys=True)
     print(jstr)
+
+    initcmd = cmd.Command(
+        id=cmd.CmdId("init"),
+        data=appinit
+    )
+
+    # confcmd = cmd.Command(
+    #     id=cmd.CmdId("conf"),
+    #     data=cmd.CmdObj(
+    #         modules=cmd.AddressedCmds([
+    #             cmd.AddressedCmd(match="fcr_{i}", data=fcr.ConfParams(
+    #                 card_id= 0,
+    #                 card_offset= {i},
+    #                 dma_id= {i},
+    #                 numa_id= {i},
+    #                 num_sources= 5
+
+    #             ))
+    #             for i in range(2)
+    #             ] + [
+    #             cmd.AddressedCmd(match="ldh_.*", data=ldh.ConfParams(
+    #                 raw_type = "wib",
+    #                 source_queue_timeout_ms = 2000,
+    #                 latency_buffer_size = 100000,
+    #                 pop_limit_pct = 0.5,
+    #                 pop_size_pct = 0.8
+    #             ))
+    #         ])
+    #     )
+    # )
+
 
 if __name__ == '__main__':
     genconf(1)
