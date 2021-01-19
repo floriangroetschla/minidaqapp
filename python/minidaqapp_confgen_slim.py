@@ -28,6 +28,27 @@ QUEUE_POP_WAIT_MS=100;
 # local clock speed Hz
 CLOCK_SPEED_HZ = 50000000;
 
+def mspec(inst, plugin, qinfos):
+    return cmd.ModSpec(inst=inst, plugin=plugin,
+            data=cmd.ModInit(
+                qinfos=cmd.QueueInfos(qinfos)
+                )
+            )
+
+def mcmd(cmdid, mods):
+    return cmd.Command(
+        id=cmd.CmdId(cmdid),
+        data=cmd.CmdObj(
+            data=cmd.CmdObj(
+            modules=cmd.AddressedCmds(
+                cmd.AddressedCmd(
+                    )
+                for m,o in mods
+                )
+            )
+        )
+    )
+
 
 def genconf(
     NUMBER_OF_DATA_PRODUCERS=2,          
@@ -58,80 +79,57 @@ def genconf(
 
     queue_specs = cmd.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
 
+
     mod_specs = [
-        cmd.ModSpec(inst="tde", plugin="TriggerDecisionEmulator",
-            data=cmd.ModInit(
-                qinfos=cmd.QueueInfos([
+        mspec("tde", "TriggerDecisionEmulator", [
                         cmd.QueueInfo(name="time_sync_source", inst="time_sync_q", dir="input"),
                         cmd.QueueInfo(name="trigger_inhibit_source", inst="trigger_inhibit_q", dir="input"),
                         cmd.QueueInfo(name="trigger_decision_sink", inst="trigger_decision_q", dir="output"),
-                    ])
-                )
-            ),
+                    ]),
 
-        cmd.ModSpec(inst="rqg", plugin="RequestGenerator",
-            data=cmd.ModInit(
-                qinfos=cmd.QueueInfos([
+        mspec("rqg", "RequestGenerator", [
                         cmd.QueueInfo(name="trigger_decision_input_queue", inst="trigger_decision_q", dir="input"),
                         cmd.QueueInfo(name="trigger_decision_for_event_building", inst="trigger_decision_copy_for_bookkeeping", dir="output"),
                         cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigger_decision_copy_for_inhibit", dir="output"),
                     ] + [
                         cmd.QueueInfo(name=f"data_request_{idx}_output_queue", inst=f"data_requests_{idx}", dir="output")
                             for idx in range(NUMBER_OF_DATA_PRODUCERS)
-                    ])
-                )
-            ),
+                    ]),
 
-        cmd.ModSpec(inst="ffr", plugin="FragmentReceiver",
-            data=cmd.ModInit(
-                qinfos=cmd.QueueInfos([
+        mspec("ffr", "FragmentReceiver", [
                         cmd.QueueInfo(name="trigger_decision_input_queue", inst="trigger_decision_copy_for_bookkeeping", dir="input"),
                         cmd.QueueInfo(name="trigger_record_output_queue", inst="trigger_record_q", dir="output"),
                         cmd.QueueInfo(name="data_fragment_input_queue", inst="data_fragments_q", dir="input"),
-                    ])
-                )
-            ),   
+                    ]),
 
-        cmd.ModSpec(inst="datawriter", plugin="DataWriter",
-            data=cmd.ModInit(
-                qinfos=cmd.QueueInfos([
+        mspec("datawriter", "DataWriter", [
                         cmd.QueueInfo(name="trigger_record_input_queue", inst="trigger_record_q", dir="input"),
                         cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigger_decision_copy_for_inhibit", dir="input"),
                         cmd.QueueInfo(name="trigger_inhibit_output_queue", inst="trigger_inhibit_q", dir="output"),
-                    ])
-                )
-            ), 
+                    ]),
 
-        cmd.ModSpec(inst="fake_source", plugin="FakeCardReader",
-            data=cmd.ModInit(
-                qinfos=cmd.QueueInfos([
+        mspec("fake_source", "FakeCardReader", [
                         cmd.QueueInfo(name=f"output_{idx}", inst=f"fake_link_{idx}", dir="output")
                             for idx in range(NUMBER_OF_DATA_PRODUCERS)
-                        ])
-                )
-            ), 
+                        ]),
+
         ] + [
-            cmd.ModSpec(inst=f"datahandler_{idx}", plugin="DataLinkHandler",
-                data=cmd.ModInit(
-                    qinfos=cmd.QueueInfos([
+                mspec(f"datahandler_{idx}", "DataLinkHandler", [
                             cmd.QueueInfo(name="raw_input", inst=f"fake_link_{idx}", dir="input"),
                             cmd.QueueInfo(name="timesync", inst="time_sync_q", dir="output"),
                             cmd.QueueInfo(name="requests", inst=f"data_requests_{idx}", dir="input"),
                             cmd.QueueInfo(name="fragments", inst="data_fragments_q", dir="output"),
-                            ])
-                    )
-                ) for idx in range(NUMBER_OF_DATA_PRODUCERS)
+                            ]) for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ]
 
-    print(mod_specs)
-    appinit = cmd.Init(queues=queue_specs, modules=mod_specs)
+    init_specs = cmd.Init(queues=queue_specs, modules=mod_specs)
 
-    jstr = json.dumps(appinit.pod(), indent=4, sort_keys=True)
+    jstr = json.dumps(init_specs.pod(), indent=4, sort_keys=True)
     print(jstr)
 
     initcmd = cmd.Command(
         id=cmd.CmdId("init"),
-        data=appinit
+        data=init_specs
     )
 
     confcmd = cmd.Command(
@@ -306,5 +304,5 @@ def genconf(
     return jstr
         
 if __name__ == '__main__':
-    with open('minidaq-app-fake-readout.json', 'w') as f:
+    with open('minidaq-app-fake-readout-slim.json', 'w') as f:
         f.write(genconf())
