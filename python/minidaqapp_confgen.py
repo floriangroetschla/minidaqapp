@@ -210,5 +210,98 @@ def genconf(
     jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
     print(jstr)
 
+    startpars = cmd.StartParams(run=RUN_NUMBER)
+    startcmd = cmd.Command(
+        id=cmd.CmdId("start"),
+        data=cmd.CmdObj(
+            modules=cmd.AddressedCmds([
+                    cmd.AddressedCmd(match="datawriter", data=startpars),
+                    cmd.AddressedCmd(match="ffr", data=startpars),
+                    cmd.AddressedCmd(match="datahandler_.*", data=startpars),
+                    cmd.AddressedCmd(match="fake_source", data=startpars),
+                    cmd.AddressedCmd(match="rqg", data=startpars),
+                    cmd.AddressedCmd(match="tde", data=startpars),
+                ])
+            )
+        )
+
+    jstr = json.dumps(startcmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nStart\n\n", jstr)
+
+    emptypars = cmd.EmptyParams()
+
+    stopcmd = cmd.Command(
+        id=cmd.CmdId("stop"),
+            data=cmd.CmdObj(
+                modules=cmd.AddressedCmds([
+                        cmd.AddressedCmd(match="tde", data=emptypars),
+                        cmd.AddressedCmd(match="rqg", data=emptypars),
+                        cmd.AddressedCmd(match="fake_source", data=emptypars),
+                        cmd.AddressedCmd(match="datahandler_.*", data=emptypars),
+                        cmd.AddressedCmd(match="ffr", data=emptypars),
+                        cmd.AddressedCmd(match="datawriter", data=emptypars),
+                    ])
+                )
+            )
+
+    jstr = json.dumps(stopcmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nStop\n\n", jstr)
+
+    pausecmd = cmd.Command(
+        id=cmd.CmdId("pause"),
+            data=cmd.CmdObj(
+                modules=cmd.AddressedCmds([
+                    cmd.AddressedCmd(
+                        match="",
+                        data=emptypars
+                   )]
+                )
+            )
+        )
+
+
+    jstr = json.dumps(pausecmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nPause\n\n", jstr)
+
+    resumecmd = cmd.Command(
+        id=cmd.CmdId("resume"),
+            data=cmd.CmdObj(
+                modules=cmd.AddressedCmds([
+                        cmd.AddressedCmd(match="tde", data=tde.ResumeParams(
+                            trigger_interval_ticks=5000000
+                        )),
+                ])
+            )
+        )
+    
+
+
+    jstr = json.dumps(resumecmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nResume\n\n", jstr)
+
+    scrapcmd = cmd.Command(
+        id=cmd.CmdId("scrap"),
+            data=cmd.CmdObj(
+                modules=cmd.AddressedCmds([
+                    cmd.AddressedCmd(
+                        match="",
+                        data=emptypars
+                   )]
+                )
+            )
+        )
+
+
+    jstr = json.dumps(scrapcmd.pod(), indent=4, sort_keys=True)
+    print("="*80+"\nScrap\n\n", jstr)
+
+    # Create a list of commands
+    cmd_seq = [initcmd, confcmd, startcmd, stopcmd, pausecmd, resumecmd, scrapcmd]
+
+    # Print them as json (to be improved/moved out)
+    jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
+    return jstr
+        
 if __name__ == '__main__':
-    genconf(1)
+    with open('minidaq-app-fake-readout.json', 'w') as f:
+        f.write(genconf())
