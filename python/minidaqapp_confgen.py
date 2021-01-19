@@ -90,7 +90,7 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
             cmd.ModSpec(inst=f"datahandler_{idx}", plugin="DataLinkHandler",
                 data=cmd.ModInit(
                     qinfos=cmd.QueueInfos([
-                            cmd.QueueInfo(name="raw-input", inst=f"fake_link_{idx}", dir="input"),
+                            cmd.QueueInfo(name="raw_input", inst=f"fake_link_{idx}", dir="input"),
                             cmd.QueueInfo(name="timesync", inst="time_sync_q", dir="output"),
                             cmd.QueueInfo(name="requests", inst=f"data_requests_{idx}", dir="input"),
                             cmd.QueueInfo(name="fragments", inst="data_fragments_q", dir="output"),
