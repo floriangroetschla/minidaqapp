@@ -60,14 +60,14 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                       cmd.qinfo("trigger_decision_for_inhibit", qdict.trigdec_for_inhibit.inst, "input"),
                       cmd.qinfo("trigger_inhibit_output_queue", qdict.trigger_inhibit_q.inst, "output")]),
 
-                  cmd.mspec("fake-source", "FakeCardReader", [
+                  cmd.mspec("fake_source", "FakeCardReader", [
                       cmd.qinfo("output_"+idx, qdict["fake_link_"+idx].inst, cmd.qdir.output)
                       for idx in std.range(0, NUMBER_OF_DATA_PRODUCERS-1)
                       ]),
                  ] +
                  [
                      cmd.mspec("datahandler_"+idx, "DataLinkHandler", [
-                         cmd.qinfo("raw-input",  qdict["fake_link_"+idx].inst, cmd.qdir.input),
+                         cmd.qinfo("raw_input",  qdict["fake_link_"+idx].inst, cmd.qdir.input),
                          cmd.qinfo("timesync",   qdict.time_sync_q.inst, cmd.qdir.output),
                          cmd.qinfo("requests",   qdict["data_requests_"+idx].inst, cmd.qdir.input),
                          cmd.qinfo("fragments",  qdict.data_fragments_q.inst,   cmd.qdir.output)
@@ -125,7 +125,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
                              },
                          }
                      }),
-            cmd.mcmd("fake-source",
+            cmd.mcmd("fake_source",
                      {
                          "link_ids": [idx
                                       for idx in std.range(0, NUMBER_OF_DATA_PRODUCERS-1)],
@@ -155,7 +155,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
             cmd.mcmd("datawriter", {"run": RUN_NUMBER}),
             cmd.mcmd("ffr", {"run": RUN_NUMBER}),
             cmd.mcmd("datahandler_.*", {"run": RUN_NUMBER}),
-            cmd.mcmd("fake-source", {"run": RUN_NUMBER}),
+            cmd.mcmd("fake_source", {"run": RUN_NUMBER}),
             cmd.mcmd("rqg", {"run": RUN_NUMBER}),
             cmd.mcmd("tde", {"run": RUN_NUMBER}),
         ]) { waitms: 1000 },
@@ -163,7 +163,7 @@ function(NUMBER_OF_DATA_PRODUCERS = 2,
         cmd.stop([
             cmd.mcmd("tde", {}),
             cmd.mcmd("rqg", {}),
-            cmd.mcmd("fake-source", {}),
+            cmd.mcmd("fake_source", {}),
             cmd.mcmd("datahandler_.*", {}),
             cmd.mcmd("ffr", {}),
             cmd.mcmd("datawriter", {}),
