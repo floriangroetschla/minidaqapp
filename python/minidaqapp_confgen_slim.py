@@ -129,67 +129,60 @@ def genconf(
         data=init_specs
     )
 
-    confcmd = cmd.Command(
-        id=cmd.CmdId("conf"),
-        data=cmd.CmdObj(
-            modules=cmd.AddressedCmds([
-                cmd.AddressedCmd(match="tde", data=tde.ConfParams(
-                    links=[idx for idx in range(NUMBER_OF_DATA_PRODUCERS)],
-                    min_links_in_request=NUMBER_OF_DATA_PRODUCERS,
-                    max_links_in_request=NUMBER_OF_DATA_PRODUCERS,
-                    min_readout_window_ticks=1200,
-                    max_readout_window_ticks=1200,
-                    trigger_window_offset=1000,
-                    # The delay is set to put the trigger well within the latency buff
-                    trigger_delay_ticks=math.floor( 2* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
-                    # We divide the trigger interval by
-                    # DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
-                    # emitted per (wall-clock) second, rather than being
-                    # spaced out further
-                    trigger_interval_ticks=trigger_interval_ticks,
-                    clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
-                    )
-                ),
-                cmd.AddressedCmd(match="rqg", data=rqg.ConfParams(
-                    map=rqg.mapgeoidqueue([
-                            rqg.geoidinst(apa=0, link=idx, queueinstance=f"data_requests_{idx}") for idx in range(NUMBER_OF_DATA_PRODUCERS)
-                        ])  
-                    )
-                ),
-                cmd.AddressedCmd(match="ffr", data=ffr.ConfParams(
-                        general_queue_timeout=QUEUE_POP_WAIT_MS
-                    )
-                ),
-                cmd.AddressedCmd(match="datawriter", data=dw.ConfParams(
-                        data_store_parameters=hdf5ds.ConfParams(
-                            name="data_store",
-                            # type = "HDF5DataStore", # default
-                            # directory_path = ".", # default
-                            # mode = "all-per-file", # default
-                            max_file_size_bytes = 1073741834,
-                            filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
-                                overall_prefix = "fake_minidaqapp",
-                                # digits_for_run_number = 6, #default
-                                file_index_prefix = "file"
-                            ),
-                            file_layout_parameters = hdf5ds.HDF5DataStoreFileLayoutParams(
-                                trigger_record_name_prefix= "TriggerRecord",
-                                digits_for_trigger_number = 5,
+
+    confcmd = mcmd("conf", [
+                ("tde", tde.ConfParams(
+                        links=[idx for idx in range(NUMBER_OF_DATA_PRODUCERS)],
+                        min_links_in_request=NUMBER_OF_DATA_PRODUCERS,
+                        max_links_in_request=NUMBER_OF_DATA_PRODUCERS,
+                        min_readout_window_ticks=1200,
+                        max_readout_window_ticks=1200,
+                        trigger_window_offset=1000,
+                        # The delay is set to put the trigger well within the latency buff
+                        trigger_delay_ticks=math.floor( 2* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+                        # We divide the trigger interval by
+                        # DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
+                        # emitted per (wall-clock) second, rather than being
+                        # spaced out further
+                        trigger_interval_ticks=trigger_interval_ticks,
+                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
+                        )),
+                ("rqg", rqg.ConfParams(
+                        map=rqg.mapgeoidqueue([
+                                rqg.geoidinst(apa=0, link=idx, queueinstance=f"data_requests_{idx}") for idx in range(NUMBER_OF_DATA_PRODUCERS)
+                            ])  
+                        )),
+                ("ffr", ffr.ConfParams(
+                            general_queue_timeout=QUEUE_POP_WAIT_MS
+                        )),
+                ("datawriter", dw.ConfParams(
+                            data_store_parameters=hdf5ds.ConfParams(
+                                name="data_store",
+                                # type = "HDF5DataStore", # default
+                                # directory_path = ".", # default
+                                # mode = "all-per-file", # default
+                                max_file_size_bytes = 1073741834,
+                                filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
+                                    overall_prefix = "fake_minidaqapp",
+                                    # digits_for_run_number = 6, #default
+                                    file_index_prefix = "file"
+                                ),
+                                file_layout_parameters = hdf5ds.HDF5DataStoreFileLayoutParams(
+                                    trigger_record_name_prefix= "TriggerRecord",
+                                    digits_for_trigger_number = 5,
+                                )
                             )
-                        )
-                    )
-                ),
-                cmd.AddressedCmd(match="fake_source", data=fcr.Conf(
-                        link_ids=list(range(NUMBER_OF_DATA_PRODUCERS)),
-                        # input_limit=10485100, # default
-                        rate_khz = CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
-                        raw_type = "wib",
-                        data_filename = "./frames.bin",
-                        queue_timeout_ms = QUEUE_POP_WAIT_MS
-                    )
-                ),
+                        )),
+                ("fake_source",fcr.Conf(
+                            link_ids=list(range(NUMBER_OF_DATA_PRODUCERS)),
+                            # input_limit=10485100, # default
+                            rate_khz = CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
+                            raw_type = "wib",
+                            data_filename = "./frames.bin",
+                            queue_timeout_ms = QUEUE_POP_WAIT_MS
+                        )),
             ] + [
-                    cmd.AddressedCmd(match=f"datahandler_{idx}", data=dlh.Conf(
+                (f"datahandler_{idx}", dlh.Conf(
                         raw_type = "wib",
                         # fake_trigger_flag=0, # default
                         source_queue_timeout_ms= QUEUE_POP_WAIT_MS,
@@ -199,63 +192,156 @@ def genconf(
                         apa_number = 0,
                         link_number = idx
                         )) for idx in range(NUMBER_OF_DATA_PRODUCERS)
-                ]
-            )
-        )
-    )
+            ])
+    # confcmd = cmd.Command(
+    #     id=cmd.CmdId("conf"),
+    #     data=cmd.CmdObj(
+    #         modules=cmd.AddressedCmds([
+    #             cmd.AddressedCmd(match="tde", data=tde.ConfParams(
+    #                 links=[idx for idx in range(NUMBER_OF_DATA_PRODUCERS)],
+    #                 min_links_in_request=NUMBER_OF_DATA_PRODUCERS,
+    #                 max_links_in_request=NUMBER_OF_DATA_PRODUCERS,
+    #                 min_readout_window_ticks=1200,
+    #                 max_readout_window_ticks=1200,
+    #                 trigger_window_offset=1000,
+    #                 # The delay is set to put the trigger well within the latency buff
+    #                 trigger_delay_ticks=math.floor( 2* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+    #                 # We divide the trigger interval by
+    #                 # DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
+    #                 # emitted per (wall-clock) second, rather than being
+    #                 # spaced out further
+    #                 trigger_interval_ticks=trigger_interval_ticks,
+    #                 clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
+    #                 )
+    #             ),
+    #             cmd.AddressedCmd(match="rqg", data=rqg.ConfParams(
+    #                 map=rqg.mapgeoidqueue([
+    #                         rqg.geoidinst(apa=0, link=idx, queueinstance=f"data_requests_{idx}") for idx in range(NUMBER_OF_DATA_PRODUCERS)
+    #                     ])  
+    #                 )
+    #             ),
+    #             cmd.AddressedCmd(match="ffr", data=ffr.ConfParams(
+    #                     general_queue_timeout=QUEUE_POP_WAIT_MS
+    #                 )
+    #             ),
+    #             cmd.AddressedCmd(match="datawriter", data=dw.ConfParams(
+    #                     data_store_parameters=hdf5ds.ConfParams(
+    #                         name="data_store",
+    #                         # type = "HDF5DataStore", # default
+    #                         # directory_path = ".", # default
+    #                         # mode = "all-per-file", # default
+    #                         max_file_size_bytes = 1073741834,
+    #                         filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
+    #                             overall_prefix = "fake_minidaqapp",
+    #                             # digits_for_run_number = 6, #default
+    #                             file_index_prefix = "file"
+    #                         ),
+    #                         file_layout_parameters = hdf5ds.HDF5DataStoreFileLayoutParams(
+    #                             trigger_record_name_prefix= "TriggerRecord",
+    #                             digits_for_trigger_number = 5,
+    #                         )
+    #                     )
+    #                 )
+    #             ),
+    #             cmd.AddressedCmd(match="fake_source", data=fcr.Conf(
+    #                     link_ids=list(range(NUMBER_OF_DATA_PRODUCERS)),
+    #                     # input_limit=10485100, # default
+    #                     rate_khz = CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
+    #                     raw_type = "wib",
+    #                     data_filename = "./frames.bin",
+    #                     queue_timeout_ms = QUEUE_POP_WAIT_MS
+    #                 )
+    #             ),
+    #         ] + [
+    #                 cmd.AddressedCmd(match=f"datahandler_{idx}", data=dlh.Conf(
+    #                     raw_type = "wib",
+    #                     # fake_trigger_flag=0, # default
+    #                     source_queue_timeout_ms= QUEUE_POP_WAIT_MS,
+    #                     latency_buffer_size = 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
+    #                     pop_limit_pct = 0.8,
+    #                     pop_size_pct = 0.1,
+    #                     apa_number = 0,
+    #                     link_number = idx
+    #                     )) for idx in range(NUMBER_OF_DATA_PRODUCERS)
+    #             ]
+    #         )
+    #     )
+    # )
 
 
     jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
     print(jstr)
 
     startpars = cmd.StartParams(run=RUN_NUMBER)
-    startcmd = cmd.Command(
-        id=cmd.CmdId("start"),
-        data=cmd.CmdObj(
-            modules=cmd.AddressedCmds([
-                    cmd.AddressedCmd(match="datawriter", data=startpars),
-                    cmd.AddressedCmd(match="ffr", data=startpars),
-                    cmd.AddressedCmd(match="datahandler_.*", data=startpars),
-                    cmd.AddressedCmd(match="fake_source", data=startpars),
-                    cmd.AddressedCmd(match="rqg", data=startpars),
-                    cmd.AddressedCmd(match="tde", data=startpars),
-                ])
-            )
-        )
+    startcmd = mcmd("start", [
+            ("datawriter", startpars),
+            ("ffr", startpars),
+            ("datahandler_.*", startpars),
+            ("fake_source", startpars),
+            ("rqg", startpars),
+            ("tde", startpars),
+        ])
+
+    # startcmd = cmd.Command(
+    #     id=cmd.CmdId("start"),
+    #     data=cmd.CmdObj(
+    #         modules=cmd.AddressedCmds([
+    #                 cmd.AddressedCmd(match="datawriter", data=startpars),
+    #                 cmd.AddressedCmd(match="ffr", data=startpars),
+    #                 cmd.AddressedCmd(match="datahandler_.*", data=startpars),
+    #                 cmd.AddressedCmd(match="fake_source", data=startpars),
+    #                 cmd.AddressedCmd(match="rqg", data=startpars),
+    #                 cmd.AddressedCmd(match="tde", data=startpars),
+    #             ])
+    #         )
+    #     )
 
     jstr = json.dumps(startcmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nStart\n\n", jstr)
 
     emptypars = cmd.EmptyParams()
 
-    stopcmd = cmd.Command(
-        id=cmd.CmdId("stop"),
-            data=cmd.CmdObj(
-                modules=cmd.AddressedCmds([
-                        cmd.AddressedCmd(match="tde", data=emptypars),
-                        cmd.AddressedCmd(match="rqg", data=emptypars),
-                        cmd.AddressedCmd(match="fake_source", data=emptypars),
-                        cmd.AddressedCmd(match="datahandler_.*", data=emptypars),
-                        cmd.AddressedCmd(match="ffr", data=emptypars),
-                        cmd.AddressedCmd(match="datawriter", data=emptypars),
-                    ])
-                )
-            )
+    stopcmd = mcmd("stop", [
+            ("tde", emptypars),
+            ("rqg", emptypars),
+            ("fake_source", emptypars),
+            ("datahandler_.*", emptypars),
+            ("ffr", emptypars),
+            ("datawriter", emptypars),
+        ])
+
+    # stopcmd = cmd.Command(
+    #     id=cmd.CmdId("stop"),
+    #         data=cmd.CmdObj(
+    #             modules=cmd.AddressedCmds([
+    #                     cmd.AddressedCmd(match="tde", data=emptypars),
+    #                     cmd.AddressedCmd(match="rqg", data=emptypars),
+    #                     cmd.AddressedCmd(match="fake_source", data=emptypars),
+    #                     cmd.AddressedCmd(match="datahandler_.*", data=emptypars),
+    #                     cmd.AddressedCmd(match="ffr", data=emptypars),
+    #                     cmd.AddressedCmd(match="datawriter", data=emptypars),
+    #                 ])
+    #             )
+    #         )
 
     jstr = json.dumps(stopcmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nStop\n\n", jstr)
 
-    pausecmd = cmd.Command(
-        id=cmd.CmdId("pause"),
-            data=cmd.CmdObj(
-                modules=cmd.AddressedCmds([
-                    cmd.AddressedCmd(
-                        match="",
-                        data=emptypars
-                   )]
-                )
-            )
-        )
+    pausecmd = mcmd("pause", [
+            ("", emptypars)
+        ])
+
+    # pausecmd = cmd.Command(
+    #     id=cmd.CmdId("pause"),
+    #         data=cmd.CmdObj(
+    #             modules=cmd.AddressedCmds([
+    #                 cmd.AddressedCmd(
+    #                     match="",
+    #                     data=emptypars
+    #                )]
+    #             )
+    #         )
+    #     )
 
 
     jstr = json.dumps(pausecmd.pod(), indent=4, sort_keys=True)
@@ -266,7 +352,7 @@ def genconf(
                             trigger_interval_ticks=trigger_interval_ticks
                         ))
         ])
-    
+
     # resumecmd = cmd.Command(
     #     id=cmd.CmdId("resume"),
     #         data=cmd.CmdObj(
