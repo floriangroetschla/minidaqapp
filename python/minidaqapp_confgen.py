@@ -78,7 +78,7 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
                 )
             ), 
 
-        cmd.ModSpec(inst="fake-source", plugin="FakeCardReader",
+        cmd.ModSpec(inst="fake_source", plugin="FakeCardReader",
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
                         cmd.QueueInfo(name=f"output_{idx}", inst=f"fake_link_{idx}", dir="output")
