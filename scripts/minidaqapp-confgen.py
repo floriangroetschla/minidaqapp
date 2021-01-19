@@ -12,8 +12,9 @@ import click
 @click.option('-r', '--run-number', default=333)
 @click.option('-t', '--trigger-rate-hz', default=1.0)
 @click.option('-d', '--data-file', type=click.Path(), default='./frames.bin')
+@click.option('-o', '--output-path', type=click.Path(), default='.')
 @click.argument('json_file', type=click.Path(), default='minidaq-app-fake-readout.json')
-def cli(number_of_data_producers, data_rate_slowdown_factor, run_number, trigger_rate_hz, data_file, json_file):
+def cli(number_of_data_producers, data_rate_slowdown_factor, run_number, trigger_rate_hz, data_file, output_path, json_file):
     """
       JSON_FILE: Input raw data file.
       JSON_FILE: Output json configuration file.
@@ -26,7 +27,8 @@ def cli(number_of_data_producers, data_rate_slowdown_factor, run_number, trigger
                 DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
                 RUN_NUMBER = run_number, 
                 TRIGGER_RATE_HZ = trigger_rate_hz,
-                DATA_FILE = data_file
+                DATA_FILE = data_file,
+                OUTPUT_PATH = output_path
             ))
 
     print(f"'{json_file}' generation completed.")

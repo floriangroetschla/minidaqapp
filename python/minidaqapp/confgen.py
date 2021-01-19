@@ -1,18 +1,20 @@
-import moo.otypes
-
+# Set moo schema search path
 from dunedaq.env import get_moo_model_path
-moo.otypes.load_types('appfwk-cmd-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('dfmodules-RequestGenerator-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('dfmodules-FragmentReceiver-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('dfmodules-DataWriter-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('dfmodules-HDF5DataStore-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('readout-FakeCardReader-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('readout-DataLinkHandler-schema.jsonnet', get_moo_model_path())
+import moo.io
+moo.io.default_load_path = get_moo_model_path()
 
-import json
-import math
+# Load configuration types
+import moo.otypes
+moo.otypes.load_types('appfwk-cmd-schema.jsonnet')
+moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet')
+moo.otypes.load_types('dfmodules-RequestGenerator-schema.jsonnet')
+moo.otypes.load_types('dfmodules-FragmentReceiver-schema.jsonnet')
+moo.otypes.load_types('dfmodules-DataWriter-schema.jsonnet')
+moo.otypes.load_types('dfmodules-HDF5DataStore-schema.jsonnet')
+moo.otypes.load_types('readout-FakeCardReader-schema.jsonnet')
+moo.otypes.load_types('readout-DataLinkHandler-schema.jsonnet')
 
+# Import new types
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
 import dunedaq.trigemu.triggerdecisionemulator as tde
 import dunedaq.dfmodules.requestgenerator as rqg
@@ -24,17 +26,20 @@ import dunedaq.readout.datalinkhandler as dlh
 
 from appfwk.utils import mcmd, mspec
 
+import json
+import math
 # Time to waait on pop()
 QUEUE_POP_WAIT_MS=100;
 # local clock speed Hz
 CLOCK_SPEED_HZ = 50000000;
 
 def generate(
-    NUMBER_OF_DATA_PRODUCERS=2,          
-    DATA_RATE_SLOWDOWN_FACTOR = 10,
-    RUN_NUMBER = 333, 
-    TRIGGER_RATE_HZ = 1.0,
-    DATA_FILE="./frames.bin"
+        NUMBER_OF_DATA_PRODUCERS=2,          
+        DATA_RATE_SLOWDOWN_FACTOR = 10,
+        RUN_NUMBER = 333, 
+        TRIGGER_RATE_HZ = 1.0,
+        DATA_FILE="./frames.bin",
+        OUTPUT_PATH=".",
     ):
     
     trigger_interval_ticks = math.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR)
@@ -57,6 +62,7 @@ def generate(
         ]
     
 
+    # Only needed to reproduce the same order as when using jsonnet
     queue_specs = cmd.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
 
 
@@ -142,7 +148,7 @@ def generate(
                             data_store_parameters=hdf5ds.ConfParams(
                                 name="data_store",
                                 # type = "HDF5DataStore", # default
-                                # directory_path = ".", # default
+                                directory_path = OUTPUT_PATH, # default
                                 # mode = "all-per-file", # default
                                 max_file_size_bytes = 1073741834,
                                 filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
