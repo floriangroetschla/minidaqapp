@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import moo.otypes
 
 from dunedaq.env import get_moo_model_path
@@ -23,31 +22,14 @@ import dunedaq.dfmodules.hdf5datastore as hdf5ds
 import dunedaq.readout.fakecardreader as fcr
 import dunedaq.readout.datalinkhandler as dlh
 
+from appfwk.utils import mcmd, mspec
+
 # Time to waait on pop()
 QUEUE_POP_WAIT_MS=100;
 # local clock speed Hz
 CLOCK_SPEED_HZ = 50000000;
 
-def mspec(inst, plugin, qinfos):
-    return cmd.ModSpec(inst=inst, plugin=plugin,
-            data=cmd.ModInit(
-                qinfos=cmd.QueueInfos(qinfos)
-                )
-            )
-
-def mcmd(cmdid, mods):
-    return cmd.Command(
-        id=cmd.CmdId(cmdid),
-        data=cmd.CmdObj(
-            modules=cmd.AddressedCmds(
-                cmd.AddressedCmd(match=m, data=o)
-                for m,o in mods
-            )
-        )
-    )
-
-
-def genconf(
+def generate(
     NUMBER_OF_DATA_PRODUCERS=2,          
     DATA_RATE_SLOWDOWN_FACTOR = 10,
     RUN_NUMBER = 333, 
