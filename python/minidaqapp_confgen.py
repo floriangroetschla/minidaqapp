@@ -100,7 +100,7 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
         ]
 
     print(mod_specs)
-    appinit = cmd.Init(queues=queues, modules=mod_specs)
+    appinit = cmd.Init(queues=queue_specs, modules=mod_specs)
 
     jstr = json.dumps(appinit.pod(), indent=4, sort_keys=True)
     print(jstr)
