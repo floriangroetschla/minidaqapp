@@ -3,7 +3,7 @@ import moo.otypes
 
 from dunedaq.env import get_moo_model_path
 moo.otypes.load_types('appfwk-cmd-schema.jsonnet', get_moo_model_path())
-moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet', get_moo_model_path())git 
+moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet', get_moo_model_path())
 # moo.otypes.load_types('readout-FelixCardReader-schema.jsonnet', get_moo_model_path())git 
 
 import json
@@ -12,8 +12,18 @@ import dunedaq.appfwk.cmd as cmd # AddressedCmd,
 import dunedaq.trigemu.triggerdecisionemulator as tde
 # import dunedaq.readout.felixcardreader as fcr
 
+# Time to waait on pop()
+QUEUE_POP_WAIT_MS=100;
+# local clock speed Hz
+CLOCK_SPEED_HZ = 50000000;
 
-def genconf(NUMBER_OF_DATA_PRODUCERS):
+
+def genconf(
+    NUMBER_OF_DATA_PRODUCERS=2,          
+    DATA_RATE_SLOWDOWN_FACTOR = 10,
+    RUN_NUMBER = 333, 
+    TRIGGER_RATE_HZ = 1.0
+    ):
 
     # Define modules and queues
     queue_specs = cmd.QueueSpecs(
@@ -110,6 +120,31 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
         data=appinit
     )
 
+    confcmd = cmd.Command(
+        id=cmd.CmdId("conf"),
+        data=cmd.CmdObj(
+            modules=cmd.AddressedCmds([
+                cmd.AddressedCmd(match="tde", data=tde.ConfParams(
+                    links=[idx for idx in range(NUMBER_OF_DATA_PRODUCERS)],
+                    min_links_in_request=NUMBER_OF_DATA_PRODUCERS,
+                    max_links_in_request=NUMBER_OF_DATA_PRODUCERS,
+                    min_readout_window_ticks=1200,
+                    max_readout_window_ticks=1200,
+                    trigger_window_offset=1000,
+                    # The delay is set to put the trigger well within the latency buff
+                    trigger_delay_ticks=std.floor( 2* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+                    # We divide the trigger interval by
+                    # DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
+                    # emitted per (wall-clock) second, rather than being
+                    # spaced out further
+                    trigger_interval_ticks=std.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+                    clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
+                    )
+                ),
+
+                ])
+            )
+        )
     # confcmd = cmd.Command(
     #     id=cmd.CmdId("conf"),
     #     data=cmd.CmdObj(
