@@ -119,7 +119,7 @@
                             }
                         ]
                     },
-                    "inst": "fake-source",
+                    "inst": "fake_source",
                     "plugin": "FakeCardReader"
                 },
                 {
@@ -128,7 +128,7 @@
                             {
                                 "dir": "input",
                                 "inst": "fake_link_0",
-                                "name": "raw-input"
+                                "name": "raw_input"
                             },
                             {
                                 "dir": "output",
@@ -156,7 +156,7 @@
                             {
                                 "dir": "input",
                                 "inst": "fake_link_1",
-                                "name": "raw-input"
+                                "name": "raw_input"
                             },
                             {
                                 "dir": "output",
@@ -317,7 +317,7 @@
                         "rate_khz": 16.666666666666668,
                         "raw_type": "wib"
                     },
-                    "match": "fake-source"
+                    "match": "fake_source"
                 },
                 {
                     "data": {
@@ -375,7 +375,7 @@
                     "data": {
                         "run": 333
                     },
-                    "match": "fake-source"
+                    "match": "fake_source"
                 },
                 {
                     "data": {
@@ -407,7 +407,7 @@
                 },
                 {
                     "data": {},
-                    "match": "fake-source"
+                    "match": "fake_source"
                 },
                 {
                     "data": {},

@@ -37,13 +37,12 @@ def genconf(
     ):
 
     # Define modules and queues
-    queue_specs = cmd.QueueSpecs(
-        [
+    queue_bare_specs = [
             cmd.QueueSpec(inst="time_sync_q", kind='FollyMPMCQueue', capacity=100),
             cmd.QueueSpec(inst="trigger_inhibit_q", kind='FollySPSCQueue', capacity=20),
             cmd.QueueSpec(inst="trigger_decision_q", kind='FollySPSCQueue', capacity=20),
             cmd.QueueSpec(inst="trigger_decision_copy_for_bookkeeping", kind='FollySPSCQueue', capacity=20),
-            cmd.QueueSpec(inst="trigdec_for_inhibit", kind='FollySPSCQueue', capacity=20),
+            cmd.QueueSpec(inst="trigger_decision_copy_for_inhibit", kind='FollySPSCQueue', capacity=20),
             cmd.QueueSpec(inst="trigger_record_q", kind='FollySPSCQueue', capacity=20),
             cmd.QueueSpec(inst="data_fragments_q", kind='FollyMPMCQueue', capacity=100),
         ] + [
@@ -53,13 +52,15 @@ def genconf(
             cmd.QueueSpec(inst=f"fake_link_{idx}", kind='FollySPSCQueue', capacity=100000)
                 for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ]
-    )
+    
+
+    queue_specs = cmd.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
 
     mod_specs = [
         cmd.ModSpec(inst="tde", plugin="TriggerDecisionEmulator",
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
-                        cmd.QueueInfo(name="linkdata", inst="time_sync_q", dir="input"),
+                        cmd.QueueInfo(name="time_sync_source", inst="time_sync_q", dir="input"),
                         cmd.QueueInfo(name="trigger_inhibit_source", inst="trigger_inhibit_q", dir="input"),
                         cmd.QueueInfo(name="trigger_decision_sink", inst="trigger_decision_q", dir="output"),
                     ])
@@ -93,7 +94,7 @@ def genconf(
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
                         cmd.QueueInfo(name="trigger_record_input_queue", inst="trigger_record_q", dir="input"),
-                        cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigdec_for_inhibit", dir="input"),
+                        cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigger_decision_copy_for_inhibit", dir="input"),
                         cmd.QueueInfo(name="trigger_inhibit_output_queue", inst="trigger_inhibit_q", dir="output"),
                     ])
                 )
