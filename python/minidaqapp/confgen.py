@@ -33,7 +33,8 @@ def generate(
     NUMBER_OF_DATA_PRODUCERS=2,          
     DATA_RATE_SLOWDOWN_FACTOR = 10,
     RUN_NUMBER = 333, 
-    TRIGGER_RATE_HZ = 1.0
+    TRIGGER_RATE_HZ = 1.0,
+    DATA_FILE="./frames.bin"
     ):
     
     trigger_interval_ticks = math.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR)
@@ -160,7 +161,7 @@ def generate(
                             # input_limit=10485100, # default
                             rate_khz = CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
                             raw_type = "wib",
-                            data_filename = "./frames.bin",
+                            data_filename = DATA_FILE,
                             queue_timeout_ms = QUEUE_POP_WAIT_MS
                         )),
             ] + [
