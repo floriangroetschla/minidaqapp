@@ -53,7 +53,7 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
                         cmd.QueueInfo(name="trigger_decision_for_inhibit", inst="trigger_decision_copy_for_inhibit", dir="output"),
                     ] + [
                         cmd.QueueInfo(name=f"data_request_{idx}_output_queue", inst=f"data_requests_{idx}", dir="output")
-                            for idx in range(NUMBER_OF_DATA_PRODUCERS),
+                            for idx in range(NUMBER_OF_DATA_PRODUCERS)
                     ])
                 )
             ),
@@ -81,8 +81,8 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
         cmd.ModSpec(inst="fake-source", plugin="FakeCardReader",
             data=cmd.ModInit(
                 qinfos=cmd.QueueInfos([
-                        cmd.QueueInfo(name=f"output_{idx}", inst=f"fake_link_{idx}", dir="output"),
-                            for idx in range(NUMBER_OF_DATA_PRODUCERS),
+                        cmd.QueueInfo(name=f"output_{idx}", inst=f"fake_link_{idx}", dir="output")
+                            for idx in range(NUMBER_OF_DATA_PRODUCERS)
                         ])
                 )
             ), 
@@ -96,7 +96,7 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
                             cmd.QueueInfo(name="fragments", inst="data_fragments_q", dir="output"),
                             ])
                     )
-                ) for idx in range(NUMBER_OF_DATA_PRODUCERS),
+                ) for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ]
 
 print(mod_specs)
