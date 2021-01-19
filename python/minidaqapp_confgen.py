@@ -4,13 +4,24 @@ import moo.otypes
 from dunedaq.env import get_moo_model_path
 moo.otypes.load_types('appfwk-cmd-schema.jsonnet', get_moo_model_path())
 moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet', get_moo_model_path())
-# moo.otypes.load_types('readout-FelixCardReader-schema.jsonnet', get_moo_model_path())git 
+moo.otypes.load_types('dfmodules-RequestGenerator-schema.jsonnet', get_moo_model_path())
+moo.otypes.load_types('dfmodules-FragmentReceiver-schema.jsonnet', get_moo_model_path())
+moo.otypes.load_types('dfmodules-DataWriter-schema.jsonnet', get_moo_model_path())
+moo.otypes.load_types('dfmodules-HDF5DataStore-schema.jsonnet', get_moo_model_path())
+moo.otypes.load_types('readout-FakeCardReader-schema.jsonnet', get_moo_model_path())
+moo.otypes.load_types('readout-DataLinkHandler-schema.jsonnet', get_moo_model_path())
 
 import json
+import math
 
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
 import dunedaq.trigemu.triggerdecisionemulator as tde
-# import dunedaq.readout.felixcardreader as fcr
+import dunedaq.dfmodules.requestgenerator as rqg
+import dunedaq.dfmodules.fragmentreceiver as ffr
+import dunedaq.dfmodules.datawriter as dw
+import dunedaq.dfmodules.hdf5datastore as hdf5ds
+import dunedaq.readout.fakecardreader as fcr
+import dunedaq.readout.datalinkhandler as dlh
 
 # Time to waait on pop()
 QUEUE_POP_WAIT_MS=100;
@@ -132,44 +143,72 @@ def genconf(
                     max_readout_window_ticks=1200,
                     trigger_window_offset=1000,
                     # The delay is set to put the trigger well within the latency buff
-                    trigger_delay_ticks=std.floor( 2* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+                    trigger_delay_ticks=math.floor( 2* CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
                     # We divide the trigger interval by
                     # DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
                     # emitted per (wall-clock) second, rather than being
                     # spaced out further
-                    trigger_interval_ticks=std.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
+                    trigger_interval_ticks=math.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
                     clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
                     )
                 ),
-
-                ])
+                cmd.AddressedCmd(match="rqg", data=rqg.ConfParams(
+                    map=rqg.mapgeoidqueue([
+                            rqg.geoidinst(apa=0, link=idx, queueinstance=f"data_requests_{idx}") for idx in range(NUMBER_OF_DATA_PRODUCERS)
+                        ])  
+                    )
+                ),
+                cmd.AddressedCmd(match="ffr", data=ffr.ConfParams(
+                        general_queue_timeout=QUEUE_POP_WAIT_MS
+                    )
+                ),
+                cmd.AddressedCmd(match="datawriter", data=dw.ConfParams(
+                        data_store_parameters=hdf5ds.ConfParams(
+                            name="data_store",
+                            # type = "HDF5DataStore", # default
+                            # directory_path = ".", # default
+                            # mode = "all-per-file", # default
+                            max_file_size_bytes = 1073741834,
+                            filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
+                                overall_prefix = "fake_minidaqapp",
+                                # digits_for_run_number = 6, #default
+                                file_index_prefix = "file"
+                            ),
+                            file_layout_parameters = hdf5ds.HDF5DataStoreFileLayoutParams(
+                                trigger_record_name_prefix= "TriggerRecord",
+                                digits_for_trigger_number = 5,
+                            )
+                        )
+                    )
+                ),
+                cmd.AddressedCmd(match="fake_source", data=fcr.Conf(
+                        link_ids=list(range(NUMBER_OF_DATA_PRODUCERS)),
+                        # input_limit=10485100, # default
+                        rate_khz = CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
+                        raw_type = "wib",
+                        data_filename = "./frames.bin",
+                        queue_timeout_ms = QUEUE_POP_WAIT_MS
+                    )
+                ),
+            ] + [
+                    cmd.AddressedCmd(match=f"datahandler_{idx}", data=dlh.Conf(
+                        raw_type = "wib",
+                        # fake_trigger_flag=0, # default
+                        source_queue_timeout_ms= QUEUE_POP_WAIT_MS,
+                        latency_buffer_size = 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
+                        pop_limit_pct = 0.8,
+                        pop_size_pct = 0.1,
+                        apa_number = 0,
+                        link_number = idx
+                        )) for idx in range(NUMBER_OF_DATA_PRODUCERS)
+                ]
             )
         )
-    # confcmd = cmd.Command(
-    #     id=cmd.CmdId("conf"),
-    #     data=cmd.CmdObj(
-    #         modules=cmd.AddressedCmds([
-    #             cmd.AddressedCmd(match="fcr_{i}", data=fcr.ConfParams(
-    #                 card_id= 0,
-    #                 card_offset= {i},
-    #                 dma_id= {i},
-    #                 numa_id= {i},
-    #                 num_sources= 5
+    )
 
-    #             ))
-    #             for i in range(2)
-    #             ] + [
-    #             cmd.AddressedCmd(match="ldh_.*", data=ldh.ConfParams(
-    #                 raw_type = "wib",
-    #                 source_queue_timeout_ms = 2000,
-    #                 latency_buffer_size = 100000,
-    #                 pop_limit_pct = 0.5,
-    #                 pop_size_pct = 0.8
-    #             ))
-    #         ])
-    #     )
-    # )
 
+    jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
+    print(jstr)
 
 if __name__ == '__main__':
     genconf(1)
