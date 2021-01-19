@@ -99,7 +99,7 @@ def genconf(NUMBER_OF_DATA_PRODUCERS):
                 ) for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ]
 
-print(mod_specs)
+    print(mod_specs)
 
 
 if __name__ == '__main__':
