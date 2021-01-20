@@ -57,10 +57,12 @@
     conf(mcmds) :: self.cmd("conf", mcmds),
 
     // A "start" command sent to all modules
-    start(runnum) :: self.cmd("start", [self.mcmd(cmdobj={run:runnum})]),
+    //start(runnum) :: self.cmd("start", [self.mcmd(cmdobj={run:runnum})]),
+    start(mcmds) :: self.cmd("start", mcmds),
 
     // A "stop" command, by default sent to all modules
-    stop(addr=defaddr) :: self.cmd("stop", addr),
+    //stop(addr=defaddr) :: self.cmd("stop", addr),
+    stop(mcmds) :: self.cmd("stop", mcmds),
 
     // A "pause" command, by default sent to all modules
     pause(addr=defaddr) :: self.cmd("pause", addr),

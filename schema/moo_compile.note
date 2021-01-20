@@ -5,9 +5,8 @@
 # Please note that these instructions assume that the appfwk repo has been
 # added to your software development environment.  If that has not already been
 # done, then you'll need to do that.
+#
+# Variables: NUMBER_OF_DATA_PRODUCERS, DATA_RATE_SLOWDOWN_FACTOR, RUN_NUMBER, TRIGGER_RATE_HZ
+#
 
-moo -M "`pwd`/../../appfwk/schema" compile slightlyreal-minidaq-app.jsonnet > ../test/slightlyreal-minidaq-app.json
-
-moo -M "`pwd`/../../appfwk/schema" compile fake-minidaq-app.jsonnet > ../test/fake-minidaq-app.json
-
-moo -M "`pwd`/../../appfwk/schema" compile minidaq-app-fake-readout.jsonnet > ../test/minidaq-app-fake-readout.json
+moo -A TRIGGER_RATE_HZ=1.0 -A RUN_NUMBER=333 -A NUMBER_OF_DATA_PRODUCERS=2 -A DATA_RATE_SLOWDOWN_FACTOR=10 compile minidaq-app-fake-readout.jsonnet > ../test/minidaq-app-fake-readout.json
