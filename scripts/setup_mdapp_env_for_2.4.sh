@@ -55,7 +55,7 @@ function clone_repo_for_mdapp {
 }
 
 # Clone the repos that we want
-clone_repo_for_mdapp ers thea/daq-cmake
+clone_repo_for_mdapp ers dune/master
 clone_repo_for_mdapp logging thea/privmessage
 clone_repo_for_mdapp appfwk develop
 clone_repo_for_mdapp cmdlib develop
