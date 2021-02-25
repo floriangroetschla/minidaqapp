@@ -74,6 +74,7 @@ clone_repo_for_mdapp trigemu eflumerf/opmon
 
 # Next, update the dbt-build-order.cmake file
 cp -p dbt-build-order.cmake dbt-build-order.cmake.orig
+sed -i 's/"daq-cmake" "logging"/"daq-cmake" "ers" "logging"/' dbt-build-order.cmake
 sed -i 's/"restcmd" "appfwk"/"restcmd" "opmonlib" "appfwk"/' dbt-build-order.cmake
 sed -i 's/"ipm" "dataformats"/"ipm" "serialization" "nwqueueadapters" "dataformats"/' dbt-build-order.cmake
 
