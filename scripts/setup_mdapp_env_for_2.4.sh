@@ -22,7 +22,7 @@ if [[ "$dbt_create_path" != "" ]]; then
             elif [[ "$response" == "n" ]]; then
                 echo "Skipping dbt-create..."
             else
-                exit 1
+                return 1
             fi
         fi
     fi
@@ -35,7 +35,7 @@ if [[ "$current_subdir" != "$sourcecode_subdir_name" ]]; then
     else
         echo "*** Warning: this script needs to be run in a newly-created dunedaq software area."
         echo "*** Warning: unable to find a subdirectory named \"${sourcecode_subdir_name}\", exiting."
-        exit 1
+        return 1
     fi
 fi
 
