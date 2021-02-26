@@ -11,8 +11,8 @@ moo.otypes.load_types('dfmodules/RequestGenerator.jsonnet')
 moo.otypes.load_types('dfmodules/FragmentReceiver.jsonnet')
 moo.otypes.load_types('dfmodules/DataWriter.jsonnet')
 moo.otypes.load_types('dfmodules/HDF5DataStore.jsonnet')
-moo.otypes.load_types('readout/FakeCardReader.jsonnet')
-moo.otypes.load_types('readout/DataLinkHandler.jsonnet')
+moo.otypes.load_types('readout/fakecardreader.jsonnet')
+moo.otypes.load_types('readout/datalinkhandler.jsonnet')
 
 # Import new types
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
