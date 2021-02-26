@@ -55,7 +55,7 @@ function clone_repo_for_mdapp {
 }
 
 # Clone the repos that we want
-clone_repo_for_mdapp ers develop v1.1.0
+clone_repo_for_mdapp ers v1.1.0
 clone_repo_for_mdapp logging develop v1.0.0
 clone_repo_for_mdapp appfwk develop
 clone_repo_for_mdapp cmdlib develop v1.1.0
