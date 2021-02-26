@@ -5,14 +5,14 @@ moo.io.default_load_path = get_moo_model_path()
 
 # Load configuration types
 import moo.otypes
-moo.otypes.load_types('appfwk-cmd-schema.jsonnet')
-moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet')
-moo.otypes.load_types('dfmodules-RequestGenerator-schema.jsonnet')
-moo.otypes.load_types('dfmodules-FragmentReceiver-schema.jsonnet')
-moo.otypes.load_types('dfmodules-DataWriter-schema.jsonnet')
-moo.otypes.load_types('dfmodules-HDF5DataStore-schema.jsonnet')
-moo.otypes.load_types('readout-FakeCardReader-schema.jsonnet')
-moo.otypes.load_types('readout-DataLinkHandler-schema.jsonnet')
+moo.otypes.load_types('appfwk/cmd.jsonnet')
+moo.otypes.load_types('trigemu/TriggerDecisionEmulator.jsonnet')
+moo.otypes.load_types('dfmodules/requestgenerator.jsonnet')
+moo.otypes.load_types('dfmodules/fragmentreceiver.jsonnet')
+moo.otypes.load_types('dfmodules/datawriter.jsonnet')
+moo.otypes.load_types('dfmodules/hdf5datastore.jsonnet')
+moo.otypes.load_types('readout/fakecardreader.jsonnet')
+moo.otypes.load_types('readout/datalinkhandler.jsonnet')
 
 # Import new types
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
@@ -58,7 +58,7 @@ def generate(
             cmd.QueueSpec(inst=f"data_requests_{idx}", kind='FollySPSCQueue', capacity=20)
                 for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ] + [
-            cmd.QueueSpec(inst=f"fake_link_{idx}", kind='FollySPSCQueue', capacity=100000)
+            cmd.QueueSpec(inst=f"wib_fake_link_{idx}", kind='FollySPSCQueue', capacity=100000)
                 for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ]
     
@@ -94,13 +94,13 @@ def generate(
                     ]),
 
         mspec("fake_source", "FakeCardReader", [
-                        cmd.QueueInfo(name=f"output_{idx}", inst=f"fake_link_{idx}", dir="output")
+                        cmd.QueueInfo(name=f"output_{idx}", inst=f"wib_fake_link_{idx}", dir="output")
                             for idx in range(NUMBER_OF_DATA_PRODUCERS)
                         ]),
 
         ] + [
                 mspec(f"datahandler_{idx}", "DataLinkHandler", [
-                            cmd.QueueInfo(name="raw_input", inst=f"fake_link_{idx}", dir="input"),
+                            cmd.QueueInfo(name="raw_input", inst=f"wib_fake_link_{idx}", dir="input"),
                             cmd.QueueInfo(name="timesync", inst="time_sync_q", dir="output"),
                             cmd.QueueInfo(name="requests", inst=f"data_requests_{idx}", dir="input"),
                             cmd.QueueInfo(name="fragments", inst="data_fragments_q", dir="output"),
