@@ -67,7 +67,7 @@ clone_repo_for_mdapp ipm glm/logging
 clone_repo_for_mdapp minidaqapp kab/opmon
 clone_repo_for_mdapp nwqueueadapters glm/logging
 clone_repo_for_mdapp opmonlib develop
-clone_repo_for_mdapp readout glm/daq-cmake
+clone_repo_for_mdapp readout develop
 clone_repo_for_mdapp restcmd develop
 clone_repo_for_mdapp serialization kab/ers_issue
 clone_repo_for_mdapp trigemu eflumerf/opmon
