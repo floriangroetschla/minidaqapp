@@ -8,13 +8,13 @@ import moo.otypes
 moo.otypes.load_types('rcif/cmd.jsonnet')
 moo.otypes.load_types('appfwk/cmd.jsonnet')
 moo.otypes.load_types('appfwk/app.jsonnet')
-moo.otypes.load_types('trigemu-TriggerDecisionEmulator-schema.jsonnet')
-moo.otypes.load_types('dfmodules-RequestGenerator-schema.jsonnet')
-moo.otypes.load_types('dfmodules-FragmentReceiver-schema.jsonnet')
-moo.otypes.load_types('dfmodules-DataWriter-schema.jsonnet')
-moo.otypes.load_types('dfmodules-HDF5DataStore-schema.jsonnet')
-moo.otypes.load_types('readout-FakeCardReader-schema.jsonnet')
-moo.otypes.load_types('readout-DataLinkHandler-schema.jsonnet')
+moo.otypes.load_types('trigemu/TriggerDecisionEmulator.jsonnet')
+moo.otypes.load_types('dfmodules/requestgenerator.jsonnet')
+moo.otypes.load_types('dfmodules/fragmentreceiver.jsonnet')
+moo.otypes.load_types('dfmodules/datawriter.jsonnet')
+moo.otypes.load_types('dfmodules/hdf5datastore.jsonnet')
+moo.otypes.load_types('readout/fakecardreader.jsonnet')
+moo.otypes.load_types('readout/datalinkhandler.jsonnet')
 
 # Import new types
 import dunedaq.cmdlib.cmd as basecmd # AddressedCmd, 
