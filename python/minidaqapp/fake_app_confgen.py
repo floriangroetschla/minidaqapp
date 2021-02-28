@@ -5,9 +5,11 @@ moo.io.default_load_path = get_moo_model_path()
 
 # Load configuration types
 import moo.otypes
+
 moo.otypes.load_types('rcif/cmd.jsonnet')
 moo.otypes.load_types('appfwk/cmd.jsonnet')
 moo.otypes.load_types('appfwk/app.jsonnet')
+
 moo.otypes.load_types('trigemu/TriggerDecisionEmulator.jsonnet')
 moo.otypes.load_types('dfmodules/requestgenerator.jsonnet')
 moo.otypes.load_types('dfmodules/fragmentreceiver.jsonnet')
@@ -63,6 +65,7 @@ def generate(
             app.QueueSpec(inst=f"data_requests_{idx}", kind='FollySPSCQueue', capacity=20)
                 for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ] + [
+
             app.QueueSpec(inst=f"wib_fake_link_{idx}", kind='FollySPSCQueue', capacity=100000)
                 for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ]
@@ -101,12 +104,14 @@ def generate(
                     ]),
 
         mspec("fake_source", "FakeCardReader", [
+
                         app.QueueInfo(name=f"output_{idx}", inst=f"wib_fake_link_{idx}", dir="output")
                             for idx in range(NUMBER_OF_DATA_PRODUCERS)
                         ]),
 
         ] + [
                 mspec(f"datahandler_{idx}", "DataLinkHandler", [
+
                             app.QueueInfo(name="raw_input", inst=f"wib_fake_link_{idx}", dir="input"),
                             app.QueueInfo(name="timesync", inst="time_sync_q", dir="output"),
                             app.QueueInfo(name="requests", inst=f"data_requests_{idx}", dir="input"),
