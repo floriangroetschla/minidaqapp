@@ -55,28 +55,30 @@ function clone_repo_for_mdapp {
 }
 
 # Clone the repos that we want
+clone_repo_for_mdapp daq-cmake develop v1.3.1
 clone_repo_for_mdapp ers v1.1.0
 clone_repo_for_mdapp logging develop v1.0.0
-clone_repo_for_mdapp appfwk develop
 clone_repo_for_mdapp cmdlib develop v1.1.0
-clone_repo_for_mdapp daq-cmake develop v1.3.1
+clone_repo_for_mdapp rcif develop
+clone_repo_for_mdapp appfwk glm/rcif
 clone_repo_for_mdapp dataformats develop
 clone_repo_for_mdapp dfmessages develop
 clone_repo_for_mdapp dfmodules develop
 clone_repo_for_mdapp ipm develop
-clone_repo_for_mdapp minidaqapp develop
 clone_repo_for_mdapp nwqueueadapters develop
 clone_repo_for_mdapp opmonlib develop
-clone_repo_for_mdapp readout develop
+clone_repo_for_mdapp readout glm/rcif
 clone_repo_for_mdapp restcmd develop
 clone_repo_for_mdapp serialization develop
 clone_repo_for_mdapp trigemu develop
+clone_repo_for_mdapp minidaqapp glm/rcif
 
 # Next, update the dbt-build-order.cmake file
 cp -p dbt-build-order.cmake dbt-build-order.cmake.orig
 sed -i 's/"daq-cmake" "logging"/"daq-cmake" "ers" "logging"/' dbt-build-order.cmake
 sed -i 's/"restcmd" "appfwk"/"restcmd" "opmonlib" "appfwk"/' dbt-build-order.cmake
 sed -i 's/"ipm" "dataformats"/"ipm" "serialization" "nwqueueadapters" "dataformats"/' dbt-build-order.cmake
+sed -i 's/"cmdlib" "restcmd"/"cmdlib" "rcif" "restcmd"/' dbt-build-order.cmake
 
 # Next, update the dbt-settings file
 cd ..
