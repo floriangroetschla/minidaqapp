@@ -63,7 +63,7 @@ clone_repo_for_mdapp rcif develop
 clone_repo_for_mdapp appfwk glm/rcif
 clone_repo_for_mdapp dataformats develop
 clone_repo_for_mdapp dfmessages develop
-clone_repo_for_mdapp dfmodules develop
+clone_repo_for_mdapp dfmodules kab/rcif
 clone_repo_for_mdapp ipm develop
 clone_repo_for_mdapp nwqueueadapters develop
 clone_repo_for_mdapp opmonlib develop
