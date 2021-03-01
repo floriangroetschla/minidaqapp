@@ -58,7 +58,7 @@ function clone_repo_for_mdapp {
 clone_repo_for_mdapp daq-cmake develop v1.3.1
 clone_repo_for_mdapp ers v1.1.0
 clone_repo_for_mdapp logging develop v1.0.0
-clone_repo_for_mdapp cmdlib develop v1.1.0
+clone_repo_for_mdapp cmdlib develop
 clone_repo_for_mdapp rcif develop
 clone_repo_for_mdapp appfwk develop
 clone_repo_for_mdapp dataformats develop
