@@ -67,7 +67,7 @@ clone_repo_for_mdapp dfmodules kab/rcif
 clone_repo_for_mdapp ipm develop
 clone_repo_for_mdapp nwqueueadapters develop
 clone_repo_for_mdapp opmonlib develop
-clone_repo_for_mdapp readout glm/rcif
+clone_repo_for_mdapp readout develop
 clone_repo_for_mdapp restcmd develop
 clone_repo_for_mdapp serialization develop
 clone_repo_for_mdapp trigemu develop
