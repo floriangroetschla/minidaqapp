@@ -63,7 +63,7 @@ clone_repo_for_mdapp rcif develop v1.0.1
 clone_repo_for_mdapp appfwk develop v2.2.0
 clone_repo_for_mdapp dataformats develop
 clone_repo_for_mdapp dfmessages develop
-clone_repo_for_mdapp dfmodules develop
+clone_repo_for_mdapp dfmodules kab/confgen_changes
 clone_repo_for_mdapp ipm develop
 clone_repo_for_mdapp nwqueueadapters develop
 clone_repo_for_mdapp opmonlib develop v1.0.0
