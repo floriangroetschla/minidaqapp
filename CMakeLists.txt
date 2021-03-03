@@ -5,7 +5,4 @@ find_package(daq-cmake REQUIRED )
 
 daq_setup_environment()
 
-# Test configurations
-file(COPY test/minidaq-app-fake-readout.json DESTINATION test)
-
 daq_install()
