@@ -10,7 +10,7 @@ moo.otypes.load_types('rcif/cmd.jsonnet')
 moo.otypes.load_types('appfwk/cmd.jsonnet')
 moo.otypes.load_types('appfwk/app.jsonnet')
 
-moo.otypes.load_types('trigemu/TriggerDecisionEmulator.jsonnet')
+moo.otypes.load_types('trigemu/triggerdecisionemulator.jsonnet')
 moo.otypes.load_types('dfmodules/requestgenerator.jsonnet')
 moo.otypes.load_types('dfmodules/fragmentreceiver.jsonnet')
 moo.otypes.load_types('dfmodules/datawriter.jsonnet')
