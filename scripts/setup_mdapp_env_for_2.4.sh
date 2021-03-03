@@ -55,7 +55,7 @@ function clone_repo_for_mdapp {
 }
 
 # Clone the repos that we want
-clone_repo_for_mdapp daq-cmake develop de6227b
+clone_repo_for_mdapp daq-cmake develop v1.3.1
 clone_repo_for_mdapp ers v1.1.0
 clone_repo_for_mdapp logging develop v1.0.0
 clone_repo_for_mdapp cmdlib develop v1.1.1
@@ -64,13 +64,13 @@ clone_repo_for_mdapp appfwk develop v2.2.0
 clone_repo_for_mdapp dataformats develop
 clone_repo_for_mdapp dfmessages develop
 clone_repo_for_mdapp dfmodules kab/confgen_changes
-clone_repo_for_mdapp ipm develop
+clone_repo_for_mdapp ipm philiprodrigues/schema-rename
 clone_repo_for_mdapp nwqueueadapters develop
 clone_repo_for_mdapp opmonlib develop v1.0.0
 clone_repo_for_mdapp readout develop
 clone_repo_for_mdapp restcmd develop
 clone_repo_for_mdapp serialization develop
-clone_repo_for_mdapp trigemu develop
+clone_repo_for_mdapp trigemu philiprodrigues/schema-rename
 clone_repo_for_mdapp minidaqapp glm/rcif
 
 # Next, update the dbt-build-order.cmake file
