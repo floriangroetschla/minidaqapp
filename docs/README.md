@@ -18,8 +18,8 @@ To help people understand/remember where the various pieces of the MiniDAQApp ar
 * [_trigemu_](https://github.com/DUNE-DAQ/trigemu) - has the code for the Trigger Decision Emulator
 
 ### Developer Notes
-* [[Simple instructions for running the app|Simple instructions for running the app]] (v1.0)
-* [[Instructions for setting up a v2.2.0 -to- v2.4.0 development environment]]
-* [[Coordination notes for v2.3.0 and v2.4.0]]
-* [[Notes from meetings and discussions|Notes from meetings and discussions]]
-* [[Reminders about tests that we want to run|Reminders about tests that we want to run]]
+* [Simple instructions for running the app](Simple-instructions-for-running-the-app.md) (v1.0)
+* [Instructions for setting up a v2.2.0 -to- v2.4.0 development environment](Instructions-for-setting-up-a-v2.2.0--to--v2.4.0-development-environment.md)
+* [Coordination notes for v2.3.0 and v2.4.0](Coordination-notes-for-v2.3.0-and-v2.4.0.md)
+* [Notes from meetings and discussions](Notes-from-meetings-and-discussions.md)
+* [Reminders about tests that we want to run](Reminders-about-tests-that-we-want-to-run.md)
