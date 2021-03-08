@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sourcecode_subdir_name="sourcecode"
-dunedaq_release_version="v2.2.0"
+dunedaq_release_version="v2.3.0"
 
 current_subdir=`echo ${PWD} | xargs basename`
 #echo "cwd = ${current_subdir}"
@@ -55,19 +55,12 @@ function clone_repo_for_mdapp {
 }
 
 # Clone the repos that we want
-clone_repo_for_mdapp daq-cmake develop v1.3.1
-clone_repo_for_mdapp ers v1.1.0
-clone_repo_for_mdapp logging develop v1.0.0
-clone_repo_for_mdapp cmdlib develop v1.1.1
-clone_repo_for_mdapp rcif develop v1.0.1
-clone_repo_for_mdapp appfwk develop v2.2.0
 clone_repo_for_mdapp dataformats develop
 clone_repo_for_mdapp dfmessages develop
 clone_repo_for_mdapp dfmodules develop
 clone_repo_for_mdapp flxlibs develop
 clone_repo_for_mdapp ipm develop
 clone_repo_for_mdapp nwqueueadapters develop
-clone_repo_for_mdapp opmonlib develop v1.0.0
 clone_repo_for_mdapp readout develop
 clone_repo_for_mdapp restcmd develop
 clone_repo_for_mdapp serialization develop
@@ -76,10 +69,6 @@ clone_repo_for_mdapp minidaqapp develop
 
 # Next, update the dbt-build-order.cmake file
 cp -p dbt-build-order.cmake dbt-build-order.cmake.orig
-sed -i 's/"daq-cmake" "logging"/"daq-cmake" "ers" "logging"/' dbt-build-order.cmake
-sed -i 's/"restcmd" "appfwk"/"restcmd" "opmonlib" "appfwk"/' dbt-build-order.cmake
-sed -i 's/"ipm" "dataformats"/"ipm" "serialization" "nwqueueadapters" "dataformats"/' dbt-build-order.cmake
-sed -i 's/"cmdlib" "restcmd"/"cmdlib" "rcif" "restcmd"/' dbt-build-order.cmake
 sed -i 's/"readout" "trigemu"/"readout" "flxlibs" "trigemu"/' dbt-build-order.cmake
 
 # Next, update the dbt-settings file
@@ -87,8 +76,4 @@ cd ..
 cp -p dbt-settings dbt-settings.orig
 sed -i 's,#"/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products","/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products",' dbt-settings
 sed -i 's,#"/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products_dev","/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products_dev",' dbt-settings
-sed -i 's/"zmq v4_3_1b e19"/"zmq v4_3_1c e19:prof"\n    "cppzmq v4_3_0 e19:prof"\n    "msgpack_c v3_3_0 e19:prof"\n    "felix v1_1_1 e19:prof"/' dbt-settings
-
-# Lastly, setup the build environment and update the version of moo
-dbt-setup-build-environment
-pip uninstall moo && pip install https://github.com/brettviren/moo/archive/0.5.5.tar.gz
+sed -i 's/"msgpack_c v3_3_0 e19:prof"/"msgpack_c v3_3_0 e19:prof"\n    "felix v1_1_0 e19:prof"/' dbt-settings
