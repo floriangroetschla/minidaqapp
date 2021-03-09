@@ -1,15 +1,49 @@
-### Steps as of 03-Mar-2021
+### Instructions for setting up a v2.3.0 software area for v2.4.0 development
+08-Mar-2021
 
-&#x1F53A;Note&#x1F53A; that there is now a script available that takes care of steps 2-5.  That script is [here](https://raw.githubusercontent.com/DUNE-DAQ/minidaqapp/feature/SampleSetupScript/scripts/setup_mdapp_env_for_2.4.sh) (it's in the _minidaqapp_ repo, on the _feature/SampleSetupScript_ branch, in the _scripts_ subdir). 
+&#x1F53A;Note&#x1F53A; that there is a script available that takes care of steps 2-4.  That script is [here](https://raw.githubusercontent.com/DUNE-DAQ/minidaqapp/feature/SampleSetupScript/scripts/setup_mdapp_env_for_2.4.sh) (it's in the _minidaqapp_ repo, on the _feature/SampleSetupScript_ branch, in the _scripts_ subdir). 
 
 To run it, please **source** it (e.g. `source <filename>`) and do this from the top level of your new software area (i.e. `MyTopDir`).
 
-
 &#x1F53A;Note:&#x1F53A; For now the configuration of OPMON is managed through environment variables: DUNEDAQ_OPMON_INTERVAL sets the interval in seconds between calling get_info (0 means disabled!), DUNEDAQ_OPMON_LEVEL allows to set the level for get_info. Note that get_info is called on the DAQ modules only in states CONFIGURED/RUNNING.
 
+1. create a new software area using the [instructions for dunedaq-v2.3.0](https://github.com/DUNE-DAQ/appfwk/wiki/Compiling-and-running-under-v2.3.0) (very roughly: `source daq-buildtools/dbt-setup-env.sh`, `cd <work_dir>`, `dbt-create.sh dunedaq-v2.3.0`  )
+   * &#x1F53A;Please Note&#x1F53A; that you should update the version of your existing daq-buildtools cloned area to tag v2.2.1.
+1. add the following repositories to the /sourcecode area:
+   * `cd sourcecode`
+   * `git clone https://github.com/DUNE-DAQ/dataformats.git -b v2.0.0`
+   * `git clone https://github.com/DUNE-DAQ/dfmessages.git -b v2.0.0`
+   * `git clone https://github.com/DUNE-DAQ/dfmodules.git -b v2.0.0`
+   * `git clone https://github.com/DUNE-DAQ/flxlibs.git -b develop`
+   * `git clone https://github.com/DUNE-DAQ/ipm.git -b v2.0.0`
+   * `git clone https://github.com/DUNE-DAQ/nwqueueadapters.git -b v1.1.0`
+   * `git clone https://github.com/DUNE-DAQ/readout.git -b develop`
+   * `git clone https://github.com/DUNE-DAQ/restcmd.git -b develop` # (optional)
+   * `git clone https://github.com/DUNE-DAQ/serialization.git -b v1.1.0`
+   * `git clone https://github.com/DUNE-DAQ/trigemu.git -b v2.0.0`
+   * `git clone https://github.com/DUNE-DAQ/minidaqapp.git -b v1.4.0`
+   * `cd ..`
+1. Update `dbt-settings`:
+    1. Uncomment lines of `#/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products` and `#/cvmfs/dune.opensciencegrid.org/dunedaq/DUNE/products_dev`;
+    1. Add line `"felix v1_1_0 e19:prof"`
+1. Update `sourcecode/dbt-build-order.cmake` to:
+```
+set(build_order "daq-cmake" "ers" "logging" "cmdlib" "rcif" "restcmd" "opmonlib" "appfwk" "listrev" "daqdemos" "ipm" "serialization" "nwqueueadapters" "dataformats" "dfmessages" "dfmodules" "readout" "flxlibs" "trigemu" "minidaqapp")
+```
+5. `dbt-setup-build-environment`
+1. `dbt-build.sh --install`
+1. `dbt-setup-runtime-environment`
+1. download a raw data file ([CERNBox link](https://cernbox.cern.ch/index.php/s/VAqNtn7bwuQtff3/download)) and put it into ./ (if you put the data anywhere else you'll need to modify the json file accordingly).
+1. `python -m minidaqapp.fake_app_confgen -d ./frames.bin -o '.' my_minidaq_config.json`
+1. `daq_application --name mdapp_test -c stdin://./my_minidaq_config.json`
+   * &#x1F538;Please Note&#x1F538; Triggers will not be generated until after a `resume` command is issued (no pause is necessary, so the order of commands to issue is: init, conf, start, resume)
+   * &#x1F538;Please Note&#x1F538; this configuration should generate trigger records with 2 links each, at 1 Hz.
+   * we can also use a different configuration that uses fake data sources
+      * `python -m dfmodules.testapp_noreadout_confgen -d ./frames.bin -o '.' ./testapp_noreadout_config.json`
+      * `daq_application --name mdapp_test -c stdin://./testapp_noreadout_config.json`
 
-1. create a new software area using the [instructions for dunedaq-v2.2.0](https://github.com/DUNE-DAQ/appfwk/wiki/Compiling-and-running-under-v2.2.0) (very roughly: `source daq-buildtools/dbt-setup-env.sh`, `cd <work_dir>`, `dbt-create.sh dunedaq-v2.2.0`  )
-   * &#x1F53A;Please Note&#x1F53A; that you should update the version of your existing daq-buildtools cloned area to tag v2.1.1.
+
+<!--
 1. add the following repositories to the /sourcecode area:
    * `cd sourcecode`
    * `git clone https://github.com/DUNE-DAQ/daq-cmake.git -b v1.3.1`
@@ -57,8 +91,9 @@ set(build_order "daq-cmake" "ers" "logging" "cmdlib" "rcif" "restcmd" "opmonlib"
    * we can also use a different configuration that uses fake data sources
       * `python -m dfmodules.testapp_noreadout_confgen -d ./frames.bin -o '.' ./testapp_noreadout_config.json`
       * `daq_application --name mdapp_test -c stdin://./testapp_noreadout_config.json`
+-->
 
-
+<!--
 ### Draft instructions for setting up a v2.3.0 software area for v2.4.0 development
 
 1. create a new software area using the [instructions for dunedaq-v2.3.0](https://github.com/DUNE-DAQ/appfwk/wiki/Compiling-and-running-under-v2.3.0) (very roughly: `source daq-buildtools/dbt-setup-env.sh`, `cd <work_dir>`, `dbt-create.sh dunedaq-v2.3.0`  )
@@ -89,6 +124,7 @@ set(build_order "daq-cmake" "ers" "logging" "cmdlib" "rcif" "restcmd" "opmonlib"
 1. `dbt-setup-runtime-environment`
 1. continue as described above...
 
+-->
 
 <!-- 
 
