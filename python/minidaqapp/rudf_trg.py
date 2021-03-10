@@ -224,12 +224,15 @@ def generate_df(
                                 disable_unique_filename_suffix = False,
                                 filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
                                     overall_prefix = "swtest",
-                                    # digits_for_run_number = 6, #default
-                                    file_index_prefix = "file"
+                                    digits_for_run_number = 6,
+                                    file_index_prefix = "",
+                                    digits_for_file_index = 4,
                                 ),
                                 file_layout_parameters = hdf5ds.HDF5DataStoreFileLayoutParams(
                                     trigger_record_name_prefix= "TriggerRecord",
                                     digits_for_trigger_number = 5,
+                                    digits_for_apa_number = 3,
+                                    digits_for_link_number = 2,
                                 )
                             )
                         )),
