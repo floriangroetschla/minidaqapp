@@ -91,9 +91,7 @@ def generate_df(
     # Define modules and queues
     queue_bare_specs = [
             app.QueueSpec(inst="time_sync_q", kind='FollyMPMCQueue', capacity=100),
-            app.QueueSpec(inst="time_sync_to_netq", kind='FollyMPMCQueue', capacity=100),
             app.QueueSpec(inst="token_q", kind='FollySPSCQueue', capacity=100),
-            app.QueueSpec(inst="token_to_netq", kind='FollySPSCQueue', capacity=100),
             app.QueueSpec(inst="trigger_decision_q", kind='FollySPSCQueue', capacity=100),
             app.QueueSpec(inst="trigger_decision_from_netq", kind='FollySPSCQueue', capacity=100),
             app.QueueSpec(inst="trigger_decision_copy_for_bookkeeping", kind='FollySPSCQueue', capacity=100),
@@ -119,11 +117,11 @@ def generate_df(
                     ]),
 
         mspec("qton_token", "QueueToNetwork", [
-                        app.QueueInfo(name="input", inst="token_to_netq", dir="input")
+                        app.QueueInfo(name="input", inst="token_q", dir="input")
                     ]),
 
         mspec("qton_timesync", "QueueToNetwork", [
-                        app.QueueInfo(name="input", inst="time_sync_to_netq", dir="input")
+                        app.QueueInfo(name="input", inst="time_sync_q", dir="input")
                     ]),
 
         mspec("rqg", "RequestGenerator", [
@@ -142,7 +140,7 @@ def generate_df(
 
         mspec("datawriter", "DataWriter", [
                         app.QueueInfo(name="trigger_record_input_queue", inst="trigger_record_q", dir="input"),
-                        app.QueueInfo(name="token_output_queue", inst="token_to_netq", dir="output"),
+                        app.QueueInfo(name="token_output_queue", inst="token_q", dir="output"),
                     ]),
 
         ] + [
