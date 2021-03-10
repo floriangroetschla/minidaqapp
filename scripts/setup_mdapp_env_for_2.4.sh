@@ -57,9 +57,9 @@ function clone_repo_for_mdapp {
 # Clone the repos that we want
 clone_repo_for_mdapp dataformats develop v2.0.0
 clone_repo_for_mdapp dfmessages develop v2.0.0
-clone_repo_for_mdapp dfmodules develop v2.0.0
+clone_repo_for_mdapp dfmodules develop v2.0.1
 clone_repo_for_mdapp flxlibs develop
-clone_repo_for_mdapp ipm develop v2.0.0
+clone_repo_for_mdapp ipm develop v2.0.1
 clone_repo_for_mdapp nwqueueadapters develop v1.1.0
 clone_repo_for_mdapp readout develop
 clone_repo_for_mdapp restcmd develop
