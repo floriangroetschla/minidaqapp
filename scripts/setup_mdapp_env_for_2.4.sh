@@ -65,7 +65,7 @@ clone_repo_for_mdapp readout develop
 clone_repo_for_mdapp restcmd develop
 clone_repo_for_mdapp serialization develop v1.1.0
 clone_repo_for_mdapp trigemu develop v2.0.0
-clone_repo_for_mdapp minidaqapp develop v1.4.0
+clone_repo_for_mdapp minidaqapp glm/multi_app
 
 # Next, update the dbt-build-order.cmake file
 cp -p dbt-build-order.cmake dbt-build-order.cmake.orig
