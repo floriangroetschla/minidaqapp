@@ -64,7 +64,7 @@ clone_repo_for_mdapp nwqueueadapters develop v1.1.1
 clone_repo_for_mdapp readout develop
 clone_repo_for_mdapp restcmd develop
 clone_repo_for_mdapp serialization develop v1.1.0
-clone_repo_for_mdapp trigemu develop v2.0.0
+clone_repo_for_mdapp trigemu develop v2.0.1
 clone_repo_for_mdapp minidaqapp glm/multi_app
 
 # Next, update the dbt-build-order.cmake file
