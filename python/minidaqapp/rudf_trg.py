@@ -220,7 +220,7 @@ def generate_df(
                                 # type = "HDF5DataStore", # default
                                 directory_path = OUTPUT_PATH, # default
                                 # mode = "all-per-file", # default
-                                max_file_size_bytes = 1073741834,
+                                max_file_size_bytes = 1073741824,
                                 disable_unique_filename_suffix = False,
                                 filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
                                     overall_prefix = "swtest",
