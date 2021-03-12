@@ -162,7 +162,7 @@ def generate(
                                 # type = "HDF5DataStore", # default
                                 directory_path = OUTPUT_PATH, # default
                                 # mode = "all-per-file", # default
-                                max_file_size_bytes = 1073741834,
+                                max_file_size_bytes = 1073741824,
                                 filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
                                     overall_prefix = "minidaqapp",
                                     # digits_for_run_number = 6, #default
