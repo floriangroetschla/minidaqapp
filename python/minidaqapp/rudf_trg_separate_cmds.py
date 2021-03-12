@@ -73,12 +73,12 @@ CLOCK_SPEED_HZ = 50000000;
 
 
 def generate_df(
+        cmdnum,
         network_endpoints,
         NUMBER_OF_DATA_PRODUCERS=2,
         EMULATOR_MODE=False,
         DATA_RATE_SLOWDOWN_FACTOR = 1,
         RUN_NUMBER = 333, 
-        TRIGGER_RATE_HZ = 1.0,
         DATA_FILE="./frames.bin",
         OUTPUT_PATH=".",
         DISABLE_OUTPUT=False,
@@ -86,8 +86,6 @@ def generate_df(
         TOKEN_COUNT=10
     ):
     """Generate the json configuration for the readout and DF process"""
-   
-    trg_interval_ticks = math.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR)
 
     # Define modules and queues
     queue_bare_specs = [
@@ -279,7 +277,7 @@ def generate_df(
                         )) for idx in range(NUMBER_OF_DATA_PRODUCERS)
             ])
 
-    startpars = rccmd.StartParams(run=RUN_NUMBER, trigger_interval_ticks=trg_interval_ticks, disable_data_storage=DISABLE_OUTPUT)
+    startpars = rccmd.StartParams(run=RUN_NUMBER, disable_data_storage=DISABLE_OUTPUT)
     startcmd = mrccmd("start", "CONFIGURED", "RUNNING", [
             ("qton_token", startpars),
             ("datawriter", startpars),
@@ -309,9 +307,7 @@ def generate_df(
         ])
 
     resumecmd = mrccmd("resume", "RUNNING", "RUNNING", [
-            ("tde", tde.ResumeParams(
-                            trigger_interval_ticks=trg_interval_ticks
-                        ))
+            ("", None)
         ])
 
     scrapcmd = mcmd("scrap", [
@@ -322,18 +318,18 @@ def generate_df(
     cmd_seq = [initcmd, confcmd, startcmd, stopcmd, pausecmd, resumecmd, scrapcmd]
 
     # Print them as json (to be improved/moved out)
-    jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
+    #jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
+    jstr = json.dumps(cmd_seq[cmdnum].pod(), indent=4, sort_keys=True)
     return jstr
 
 #===============================================================================
 def generate_trigemu(
+        cmdnum,
         network_endpoints,
         NUMBER_OF_DATA_PRODUCERS=2,          
         DATA_RATE_SLOWDOWN_FACTOR = 1,
         RUN_NUMBER = 333, 
-        TRIGGER_RATE_HZ = 1.0,
-        DATA_FILE="./frames.bin",
-        OUTPUT_PATH=".",
+        TRIGGER_RATE_HZ = 1.0
     ):
     """Generate the json config for the TriggerDecisionEmulator process"""
     
@@ -420,7 +416,7 @@ def generate_trigemu(
                         )),
             ])
 
-    startpars = rccmd.StartParams(run=RUN_NUMBER, disable_data_storage=False)
+    startpars = rccmd.StartParams(run=RUN_NUMBER, trigger_interval_ticks=trg_interval_ticks)
     startcmd = mrccmd("start", "CONFIGURED", "RUNNING", [
             ("qton_trigdec", startpars),
             ("ntoq_token", startpars),
@@ -453,7 +449,7 @@ def generate_trigemu(
     cmd_seq = [initcmd, confcmd, startcmd, stopcmd, pausecmd, resumecmd, scrapcmd]
 
     # Print them as json (to be improved/moved out)
-    jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
+    jstr = json.dumps(cmd_seq[cmdnum].pod(), indent=4, sort_keys=True)
     return jstr
 
 if __name__ == '__main__':
@@ -482,43 +478,43 @@ if __name__ == '__main__':
           JSON_FILE: Output json configuration file.
         """
 
-        json_file_trigemu=json_file_base+"-trgemu.json"
+        json_file_trigemu=json_file_base+"-trgemu-"
         if use_felix:
-            json_file_df=json_file_base+"-ruflx_df.json"
+            json_file_df=json_file_base+"-ruflx_df-"
         else:
-            json_file_df=json_file_base+"-ruemu_df.json"
+            json_file_df=json_file_base+"-ruemu_df-"
 
         network_endpoints={
             "trigdec" : f"tcp://{host_ip_trigemu}:12345",
             "triginh" : f"tcp://{host_ip_df}:12346",
             "timesync": f"tcp://{host_ip_df}:12347"
         }
+        cmdname_seq = ["init", "conf", "start", "stop", "pause", "resume", "scrap"]
+        for i in range(0, len(cmdname_seq)) :
+            with open(json_file_trigemu+cmdname_seq[i]+".json", 'w') as f:
+                f.write(generate_trigemu(
+                        i,
+                        network_endpoints,
+                        NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
+                        DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
+                        RUN_NUMBER = run_number, 
+                        TRIGGER_RATE_HZ = trigger_rate_hz
+                    ))
 
-        with open(json_file_trigemu, 'w') as f:
-            f.write(generate_trigemu(
-                    network_endpoints,
-                    NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
-                    DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
-                    RUN_NUMBER = run_number, 
-                    TRIGGER_RATE_HZ = trigger_rate_hz,
-                    DATA_FILE = data_file,
-                    OUTPUT_PATH = output_path
-                ))
-
-        with open(json_file_df, 'w') as f:
-            f.write(generate_df(
-                    network_endpoints,
-                    NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
-                    EMULATOR_MODE = emulator_mode,
-                    DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
-                    RUN_NUMBER = run_number, 
-                    TRIGGER_RATE_HZ = trigger_rate_hz,
-                    DATA_FILE = data_file,
-                    OUTPUT_PATH = output_path,
-                    DISABLE_OUTPUT = disable_data_storage,
-                    FLX_INPUT = use_felix,
-                    TOKEN_COUNT = token_count
-                ))
+            with open(json_file_df+cmdname_seq[i]+".json", 'w') as f:
+                f.write(generate_df(
+                        i,
+                        network_endpoints,
+                        NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
+                        EMULATOR_MODE = emulator_mode,
+                        DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
+                        RUN_NUMBER = run_number, 
+                        DATA_FILE = data_file,
+                        OUTPUT_PATH = output_path,
+                        DISABLE_OUTPUT = disable_data_storage,
+                        FLX_INPUT = use_felix,
+                        TOKEN_COUNT = token_count
+                    ))
 
     cli()
     
