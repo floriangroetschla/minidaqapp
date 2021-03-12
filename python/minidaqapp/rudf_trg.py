@@ -74,7 +74,8 @@ CLOCK_SPEED_HZ = 50000000;
 
 def generate_df(
         network_endpoints,
-        NUMBER_OF_DATA_PRODUCERS=2,          
+        NUMBER_OF_DATA_PRODUCERS=2,
+        EMULATOR_MODE=False,
         DATA_RATE_SLOWDOWN_FACTOR = 1,
         RUN_NUMBER = 333, 
         TRIGGER_RATE_HZ = 1.0,
@@ -267,6 +268,7 @@ def generate_df(
             ] + [
                 (f"datahandler_{idx}", dlh.Conf(
                         raw_type = "wib",
+                        emulator_mode = EMULATOR_MODE,
                         # fake_trigger_flag=0, # default
                         source_queue_timeout_ms= QUEUE_POP_WAIT_MS,
                         latency_buffer_size = 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
@@ -462,6 +464,7 @@ if __name__ == '__main__':
 
     @click.command(context_settings=CONTEXT_SETTINGS)
     @click.option('-n', '--number-of-data-producers', default=2)
+    @click.option('-e', '--emulator-mode', is_flag=True)
     @click.option('-s', '--data-rate-slowdown-factor', default=1)
     @click.option('-r', '--run-number', default=333)
     @click.option('-t', '--trigger-rate-hz', default=1.0)
@@ -473,7 +476,7 @@ if __name__ == '__main__':
     @click.option('--host-ip-df', default='127.0.0.1')
     @click.option('--host-ip-trigemu', default='127.0.0.1')
     @click.argument('json_file_base', type=click.Path(), default='minidaqapp')
-    def cli(number_of_data_producers, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, host_ip_df, host_ip_trigemu, json_file_base):
+    def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, host_ip_df, host_ip_trigemu, json_file_base):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
@@ -506,6 +509,7 @@ if __name__ == '__main__':
             f.write(generate_df(
                     network_endpoints,
                     NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
+                    EMULATOR_MODE = emulator_mode,
                     DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
                     RUN_NUMBER = run_number, 
                     TRIGGER_RATE_HZ = trigger_rate_hz,
