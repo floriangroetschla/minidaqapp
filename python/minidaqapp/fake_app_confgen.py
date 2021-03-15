@@ -130,6 +130,12 @@ def generate(
         data=init_specs
     )
 
+    if TOKEN_COUNT > 0:
+        df_token_count = 0
+        trigemu_token_count = TOKEN_COUNT
+    else:
+        df_token_count = -1 * TOKEN_COUNT
+        trigemu_token_count = 0
 
     confcmd = mrccmd("conf", "INITIAL", "CONFIGURED",[
                 ("tde", tde.ConfParams(
@@ -146,7 +152,8 @@ def generate(
                         # emitted per (wall-clock) second, rather than being
                         # spaced out further
                         trigger_interval_ticks=trigger_interval_ticks,
-                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
+                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR,
+                        initial_token_count=trigemu_token_count
                         )),
                 ("rqg", rqg.ConfParams(
                         map=rqg.mapgeoidqueue([
@@ -157,7 +164,7 @@ def generate(
                             general_queue_timeout=QUEUE_POP_WAIT_MS
                         )),
                 ("datawriter", dw.ConfParams(
-                            initial_token_count=TOKEN_COUNT,
+                            initial_token_count=df_token_count,
                             data_store_parameters=hdf5ds.ConfParams(
                                 name="data_store",
                                 # type = "HDF5DataStore", # default

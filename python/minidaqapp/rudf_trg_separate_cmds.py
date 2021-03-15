@@ -83,7 +83,7 @@ def generate_df(
         OUTPUT_PATH=".",
         DISABLE_OUTPUT=False,
         FLX_INPUT=True,
-        TOKEN_COUNT=10
+        TOKEN_COUNT=0
     ):
     """Generate the json configuration for the readout and DF process"""
 
@@ -329,7 +329,8 @@ def generate_trigemu(
         NUMBER_OF_DATA_PRODUCERS=2,          
         DATA_RATE_SLOWDOWN_FACTOR = 1,
         RUN_NUMBER = 333, 
-        TRIGGER_RATE_HZ = 1.0
+        TRIGGER_RATE_HZ = 1.0,
+        TOKEN_COUNT = 10
     ):
     """Generate the json config for the TriggerDecisionEmulator process"""
     
@@ -412,7 +413,8 @@ def generate_trigemu(
                         # emitted per (wall-clock) second, rather than being
                         # spaced out further
                         trigger_interval_ticks=trg_interval_ticks,
-                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
+                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR,
+                        initial_token_count=TOKEN_COUNT                    
                         )),
             ])
 
@@ -484,6 +486,13 @@ if __name__ == '__main__':
         else:
             json_file_df=json_file_base+"-ruemu_df-"
 
+        if token_count > 0:
+            df_token_count = 0
+            trigemu_token_count = token_count
+        else:
+            df_token_count = -1 * token_count
+            trigemu_token_count = 0
+
         network_endpoints={
             "trigdec" : f"tcp://{host_ip_trigemu}:12345",
             "triginh" : f"tcp://{host_ip_df}:12346",
@@ -498,7 +507,8 @@ if __name__ == '__main__':
                         NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
                         DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
                         RUN_NUMBER = run_number, 
-                        TRIGGER_RATE_HZ = trigger_rate_hz
+                        TRIGGER_RATE_HZ = trigger_rate_hz,
+                        TOKEN_COUNT = trigemu_token_count
                     ))
 
             with open(json_file_df+cmdname_seq[i]+".json", 'w') as f:
@@ -513,7 +523,7 @@ if __name__ == '__main__':
                         OUTPUT_PATH = output_path,
                         DISABLE_OUTPUT = disable_data_storage,
                         FLX_INPUT = use_felix,
-                        TOKEN_COUNT = token_count
+                        TOKEN_COUNT = df_token_count
                     ))
 
     cli()
