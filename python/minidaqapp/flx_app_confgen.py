@@ -253,7 +253,7 @@ def generate(
     jstr = json.dumps(resumecmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nResume\n\n", jstr)
 
-    scrapcmd = mcmd("scrap", [
+    scrapcmd = mrccmd("scrap", "CONFIGURED", "INITIAL", [
             ("", None)
         ])
 

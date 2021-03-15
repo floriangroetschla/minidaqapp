@@ -314,7 +314,7 @@ def generate_df(
                         ))
         ])
 
-    scrapcmd = mcmd("scrap", [
+    scrapcmd = mrccmd("scrap", "CONFIGURED", "INITIAL", [
             ("", None)
         ])
 
@@ -445,7 +445,7 @@ def generate_trigemu(
                         ))
         ])
 
-    scrapcmd = mcmd("scrap", [
+    scrapcmd = mrccmd("scrap", "CONFIGURED", "INITIAL", [
             ("", None)
         ])
 
