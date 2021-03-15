@@ -83,7 +83,7 @@ def generate_df(
         OUTPUT_PATH=".",
         DISABLE_OUTPUT=False,
         FLX_INPUT=True,
-        TOKEN_COUNT=10
+        TOKEN_COUNT=0
     ):
     """Generate the json configuration for the readout and DF process"""
    
@@ -334,6 +334,7 @@ def generate_trigemu(
         TRIGGER_RATE_HZ = 1.0,
         DATA_FILE="./frames.bin",
         OUTPUT_PATH=".",
+        TOKEN_COUNT=10
     ):
     """Generate the json config for the TriggerDecisionEmulator process"""
     
@@ -416,7 +417,8 @@ def generate_trigemu(
                         # emitted per (wall-clock) second, rather than being
                         # spaced out further
                         trigger_interval_ticks=trg_interval_ticks,
-                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
+                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR,
+                        initial_token_count=TOKEN_COUNT                    
                         )),
             ])
 
@@ -494,6 +496,13 @@ if __name__ == '__main__':
             "timesync": f"tcp://{host_ip_df}:12347"
         }
 
+        if token_count > 0:
+            df_token_count = 0
+            trigemu_token_count = token_count
+        else:
+            df_token_count = -1 * token_count
+            trigemu_token_count = 0
+
         with open(json_file_trigemu, 'w') as f:
             f.write(generate_trigemu(
                     network_endpoints,
@@ -502,7 +511,8 @@ if __name__ == '__main__':
                     RUN_NUMBER = run_number, 
                     TRIGGER_RATE_HZ = trigger_rate_hz,
                     DATA_FILE = data_file,
-                    OUTPUT_PATH = output_path
+                    OUTPUT_PATH = output_path,
+                    TOKEN_COUNT = trigemu_token_count
                 ))
 
         with open(json_file_df, 'w') as f:
@@ -517,7 +527,7 @@ if __name__ == '__main__':
                     OUTPUT_PATH = output_path,
                     DISABLE_OUTPUT = disable_data_storage,
                     FLX_INPUT = use_felix,
-                    TOKEN_COUNT = token_count
+                    TOKEN_COUNT = df_token_count
                 ))
 
     cli()
