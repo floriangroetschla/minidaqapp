@@ -451,7 +451,7 @@ def generate_trigemu(
     cmd_seq = [initcmd, confcmd, startcmd, stopcmd, pausecmd, resumecmd, scrapcmd]
 
     # Print them as json (to be improved/moved out)
-    jstr = json.dumps(cmd_seq[cmdnum].pod(), indent=4, sort_keys=True)
+    jstr = json.dumps(cmd_seq[cmdnum].data, indent=4, sort_keys=True)
     return jstr
 
 if __name__ == '__main__':
@@ -489,7 +489,7 @@ if __name__ == '__main__':
 
 
         json_file_trigemu=os.path.join(data_dir,"trgemu")
-        json_file_df = os.path.join(data_dir, "ruflx_df" if use_felix else "ruemu_df_")
+        json_file_df = os.path.join(data_dir, "ruflx_df" if use_felix else "ruemu_df")
 
         if token_count > 0:
             df_token_count = 0
