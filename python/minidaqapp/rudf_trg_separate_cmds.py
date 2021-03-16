@@ -473,18 +473,23 @@ if __name__ == '__main__':
     @click.option('-f', '--use-felix', is_flag=True)
     @click.option('--host-ip-df', default='127.0.0.1')
     @click.option('--host-ip-trigemu', default='127.0.0.1')
-    @click.argument('json_file_base', type=click.Path(), default='minidaqapp')
-    def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, host_ip_df, host_ip_trigemu, json_file_base):
+    @click.argument('json_dir', type=click.Path(), default='minidaqapp')
+    def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, host_ip_df, host_ip_trigemu, json_dir):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
         """
 
-        json_file_trigemu=json_file_base+"-trgemu-"
-        if use_felix:
-            json_file_df=json_file_base+"-ruflx_df-"
-        else:
-            json_file_df=json_file_base+"-ruemu_df-"
+        import os.path
+        if os.path.exists(json_dir):
+            raise click.Abort(f"Directory {json_dir} already exists")
+
+        data_dir = os.path.join(json_dir, 'data')
+        os.makedirs(data_dir)
+
+
+        json_file_trigemu=os.path.join(data_dir,"trgemu")
+        json_file_df = os.path.join(data_dir, "ruflx_df" if use_felix else "ruemu_df_")
 
         if token_count > 0:
             df_token_count = 0
@@ -500,7 +505,7 @@ if __name__ == '__main__':
         }
         cmdname_seq = ["init", "conf", "start", "stop", "pause", "resume", "scrap"]
         for i in range(0, len(cmdname_seq)) :
-            with open(json_file_trigemu+cmdname_seq[i]+".json", 'w') as f:
+            with open(f"{json_file_trigemu}_{cmdname_seq[i]}.json", 'w') as f:
                 f.write(generate_trigemu(
                         i,
                         network_endpoints,
@@ -511,7 +516,7 @@ if __name__ == '__main__':
                         TOKEN_COUNT = trigemu_token_count
                     ))
 
-            with open(json_file_df+cmdname_seq[i]+".json", 'w') as f:
+            with open(f"{json_file_df}_{cmdname_seq[i]}.json", 'w') as f:
                 f.write(generate_df(
                         i,
                         network_endpoints,
