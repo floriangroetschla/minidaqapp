@@ -319,7 +319,7 @@ def generate_df(
 
     # Print them as json (to be improved/moved out)
     #jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
-    jstr = json.dumps(cmd_seq[cmdnum].pod(), indent=4, sort_keys=True)
+    jstr = json.dumps(cmd_seq[cmdnum].data, indent=4, sort_keys=True)
     return jstr
 
 #===============================================================================
