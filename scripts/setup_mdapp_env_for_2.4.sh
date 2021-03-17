@@ -65,8 +65,10 @@ clone_repo_for_mdapp readout develop v1.2.0
 clone_repo_for_mdapp serialization develop v1.1.0
 clone_repo_for_mdapp trigemu develop v2.1.0
 clone_repo_for_mdapp minidaqapp develop v2.1.1
+cd ..
 
 ## Next, update the dbt-build-order.cmake file
+#cd sourcecode
 #cp -p dbt-build-order.cmake dbt-build-order.cmake.orig
 #sed -i 's/"readout" "trigemu"/"readout" "flxlibs" "trigemu"/' dbt-build-order.cmake
 
