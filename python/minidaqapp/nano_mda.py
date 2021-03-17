@@ -135,12 +135,12 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
             "apps" : {
                 app_trgemu : {
                     "exec": "daq_application",
-                    "host": "host_rudf",
+                    "host": "host_trg",
                     "port": 3333
                 },
                 app_dfru: {
                     "exec": "daq_application",
-                    "host": "host_trg",
+                    "host": "host_rudf",
                     "port": 3334
                 }
             }
