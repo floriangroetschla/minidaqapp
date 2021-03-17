@@ -154,4 +154,4 @@ if __name__ == '__main__':
     try:
         cli(show_default=True, standalone_mode=True)
     except Exception as e:
-        console.print_traceback()
+        console.print_exception()
