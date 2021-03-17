@@ -1,7 +1,7 @@
 import json
 import os
+import rich.traceback
 from rich.console import Console
-from rich.traceback import Traceback
 from os.path import exists, join
 
 
@@ -26,15 +26,18 @@ import click
 @click.option('-o', '--output-path', type=click.Path(), default='.')
 @click.option('--disable-data-storage', is_flag=True)
 @click.option('-f', '--use-felix', is_flag=True)
-@click.option('--host-df', default='localhost')
+@click.option('--host-rudf', default='localhost')
 @click.option('--host-trg', default='localhost')
-@click.argument('json_dir', type=click.Path(), default='minidaqapp_cfg')
-def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, host_df, host_trg, json_dir):
+@click.argument('json_dir', type=click.Path())
+def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, host_rudf, host_trg, json_dir):
     """
       JSON_DIR: Json file output folder
     """
+    console.log("Loading rudf config generator")
     from . import rudf_gen
+    console.log("Loading trg config generator")
     from . import trg_gen
+    console.log(f"Generating configs for hosts trg={host_trg} rudf={host_rudf}")
 
 
     if token_count > 0:
@@ -46,8 +49,8 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
 
     network_endpoints={
         "trigdec" : "tcp://{host_trg}:12345",
-        "triginh" : "tcp://{host_df}:12346",
-        "timesync": "tcp://{host_df}:12347"
+        "triginh" : "tcp://{host_rudf}:12346",
+        "timesync": "tcp://{host_rudf}:12347"
     }
 
 
@@ -61,7 +64,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
         CLOCK_SPEED_HZ = CLOCK_SPEED_HZ
     )
 
-    console.print(cmd_data_trg)
+    console.log("trg cmd data:", cmd_data_trg)
 
     cmd_data_rudf = rudf_gen.generate(
         network_endpoints,
@@ -76,7 +79,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
         TOKEN_COUNT = df_token_count,
         CLOCK_SPEED_HZ = CLOCK_SPEED_HZ
     )
-    console.print(cmd_data_rudf)
+    console.log("rudf cmd data:", cmd_data_rudf)
 
 
     if exists(json_dir):
@@ -93,6 +96,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
 
     cmd_set = ["init", "conf", "start", "stop", "pause", "resume", "scrap"]
     for app,data in ((app_trgemu, cmd_data_trg), (app_dfru, cmd_data_rudf)):
+        console.log(f"Generating {app} command data json files")
     # for app,data in ((app_trgemu, None), (app_dfru, None)):
         for c in cmd_set:
             with open(f'{join(data_dir, app)}_{c}.json', 'w') as f:
@@ -100,6 +104,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
                 json.dump(data[c].pod(), f, indent=4, sort_keys=True)
 
 
+    console.log(f"Generating top-level command json files")
     start_order = [app_dfru, app_trgemu]
     for c in cmd_set:
         with open(join(json_dir,f'{c}.json'), 'w') as f:
@@ -116,6 +121,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
             json.dump(cfg, f, indent=4, sort_keys=True)
 
 
+    console.log(f"Generating boot json file")
     with open(join(json_dir,'boot.json'), 'w') as f:
         cfg = {
             "env" : {
@@ -123,13 +129,13 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
                 "DBT_AREA_ROOT": "env"
             },
             "hosts": {
-                "host_df": host_df,
+                "host_rudf": host_rudf,
                 "host_trg": host_trg
             },
             "apps" : {
                 app_trgemu : {
                     "exec": "daq_application",
-                    "host": "host_df",
+                    "host": "host_rudf",
                     "port": 3333
                 },
                 app_dfru: {
@@ -140,6 +146,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
             }
         }
         json.dump(cfg, f, indent=4, sort_keys=True)
+    console.log(f"MDAapp config generated in {json_dir}")
 
 
 if __name__ == '__main__':
@@ -147,4 +154,4 @@ if __name__ == '__main__':
     try:
         cli(show_default=True, standalone_mode=True)
     except Exception as e:
-        console.print(Traceback())
+        console.print_traceback()
