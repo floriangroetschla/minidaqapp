@@ -87,7 +87,8 @@ def generate_boot( tremu_spec: dict, rudf_spec: dict) -> dict:
         "exec": daq_app_specs
     }
 
-    console.print(boot)
+    console.log("Boot data")
+    console.log(boot)
     return boot
 
 import click
@@ -207,7 +208,7 @@ def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_
             rudf_spec = {
                 "name": app_rudf,
                 "host": host_rudf,
-                "port": 3333
+                "port": 3334
             },
         )
         json.dump(cfg, f, indent=4, sort_keys=True)
