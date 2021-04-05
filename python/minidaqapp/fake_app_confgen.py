@@ -41,7 +41,8 @@ QUEUE_POP_WAIT_MS=100;
 CLOCK_SPEED_HZ = 50000000;
 
 def generate(
-        NUMBER_OF_DATA_PRODUCERS=2,          
+        NUMBER_OF_DATA_PRODUCERS=2,
+        EMULATOR_MODE=False,
         DATA_RATE_SLOWDOWN_FACTOR = 10,
         RUN_NUMBER = 333, 
         TRIGGER_RATE_HZ = 1.0,
@@ -129,6 +130,12 @@ def generate(
         data=init_specs
     )
 
+    if TOKEN_COUNT > 0:
+        df_token_count = 0
+        trigemu_token_count = TOKEN_COUNT
+    else:
+        df_token_count = -1 * TOKEN_COUNT
+        trigemu_token_count = 0
 
     confcmd = mrccmd("conf", "INITIAL", "CONFIGURED",[
                 ("tde", tde.ConfParams(
@@ -145,7 +152,8 @@ def generate(
                         # emitted per (wall-clock) second, rather than being
                         # spaced out further
                         trigger_interval_ticks=trigger_interval_ticks,
-                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR                    
+                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR,
+                        initial_token_count=trigemu_token_count
                         )),
                 ("rqg", rqg.ConfParams(
                         map=rqg.mapgeoidqueue([
@@ -156,21 +164,24 @@ def generate(
                             general_queue_timeout=QUEUE_POP_WAIT_MS
                         )),
                 ("datawriter", dw.ConfParams(
-                            initial_token_count=TOKEN_COUNT,
+                            initial_token_count=df_token_count,
                             data_store_parameters=hdf5ds.ConfParams(
                                 name="data_store",
                                 # type = "HDF5DataStore", # default
                                 directory_path = OUTPUT_PATH, # default
                                 # mode = "all-per-file", # default
-                                max_file_size_bytes = 1073741834,
+                                max_file_size_bytes = 1073741824,
                                 filename_parameters = hdf5ds.HDF5DataStoreFileNameParams(
-                                    overall_prefix = "fake_minidaqapp",
-                                    # digits_for_run_number = 6, #default
-                                    file_index_prefix = "file"
+                                    overall_prefix = "swtest",
+                                    digits_for_run_number = 6,
+                                    file_index_prefix = "",
+                                    digits_for_file_index = 4,
                                 ),
                                 file_layout_parameters = hdf5ds.HDF5DataStoreFileLayoutParams(
                                     trigger_record_name_prefix= "TriggerRecord",
                                     digits_for_trigger_number = 5,
+                                    digits_for_apa_number = 3,
+                                    digits_for_link_number = 2,
                                 )
                             )
                         )),
@@ -185,6 +196,7 @@ def generate(
             ] + [
                 (f"datahandler_{idx}", dlh.Conf(
                         raw_type = "wib",
+                        emulator_mode = EMULATOR_MODE,
                         # fake_trigger_flag=0, # default
                         source_queue_timeout_ms= QUEUE_POP_WAIT_MS,
                         latency_buffer_size = 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
@@ -240,7 +252,7 @@ def generate(
     jstr = json.dumps(resumecmd.pod(), indent=4, sort_keys=True)
     print("="*80+"\nResume\n\n", jstr)
 
-    scrapcmd = mcmd("scrap", [
+    scrapcmd = mrccmd("scrap", "CONFIGURED", "INITIAL", [
             ("", None)
         ])
 
@@ -262,6 +274,7 @@ if __name__ == '__main__':
 
     @click.command(context_settings=CONTEXT_SETTINGS)
     @click.option('-n', '--number-of-data-producers', default=2)
+    @click.option('-e', '--emulator-mode', is_flag=True)
     @click.option('-s', '--data-rate-slowdown-factor', default=10)
     @click.option('-r', '--run-number', default=333)
     @click.option('-t', '--trigger-rate-hz', default=1.0)
@@ -270,7 +283,7 @@ if __name__ == '__main__':
     @click.option('--disable-data-storage', is_flag=True)
     @click.option('-c', '--token-count', default=10)
     @click.argument('json_file', type=click.Path(), default='minidaq-app-fake-readout.json')
-    def cli(number_of_data_producers, data_rate_slowdown_factor, run_number, trigger_rate_hz, data_file, output_path, disable_data_storage, token_count, json_file):
+    def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, data_file, output_path, disable_data_storage, token_count, json_file):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
@@ -279,6 +292,7 @@ if __name__ == '__main__':
         with open(json_file, 'w') as f:
             f.write(generate(
                     NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
+                    EMULATOR_MODE = emulator_mode,
                     DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
                     RUN_NUMBER = run_number, 
                     TRIGGER_RATE_HZ = trigger_rate_hz,
