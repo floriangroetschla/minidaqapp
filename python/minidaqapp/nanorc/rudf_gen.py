@@ -1,16 +1,3 @@
-# testapp_noreadout_two_process.py
-
-# This python configuration produces *two* json configuration files
-# that together form a MiniDAQApp with the same functionality as
-# MiniDAQApp v1, but in two processes. One process contains the
-# TriggerDecisionEmulator, while the other process contains everything
-# else. The network communication is done with the QueueToNetwork and
-# NetworkToQueue modules from the nwqueueadapters package.
-#
-# As with testapp_noreadout_confgen.py
-# in this directory, no modules from the readout package are used: the
-# fragments are provided by the FakeDataProd module from dfmodules
-
 
 # Set moo schema search path
 from dunedaq.env import get_moo_model_path
@@ -23,7 +10,6 @@ moo.otypes.load_types('rcif/cmd.jsonnet')
 moo.otypes.load_types('appfwk/cmd.jsonnet')
 moo.otypes.load_types('appfwk/app.jsonnet')
 
-moo.otypes.load_types('trigemu/triggerdecisionemulator.jsonnet')
 #moo.otypes.load_types('trigemu/faketimesyncsource.jsonnet')
 moo.otypes.load_types('dfmodules/requestgenerator.jsonnet')
 moo.otypes.load_types('dfmodules/fragmentreceiver.jsonnet')
@@ -44,8 +30,6 @@ import dunedaq.cmdlib.cmd as basecmd # AddressedCmd,
 import dunedaq.rcif.cmd as rccmd # AddressedCmd, 
 import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
 import dunedaq.appfwk.app as app # AddressedCmd,
-import dunedaq.trigemu.triggerdecisionemulator as tde
-#import dunedaq.trigemu.faketimesyncsource as ftss
 import dunedaq.dfmodules.requestgenerator as rqg
 import dunedaq.dfmodules.fragmentreceiver as ffr
 import dunedaq.dfmodules.datawriter as dw
@@ -59,8 +43,6 @@ import dunedaq.readout.fakecardreader as fakecr
 import dunedaq.flxlibs.felixcardreader as flxcr
 import dunedaq.readout.datalinkhandler as dlh
 
-
-
 from appfwk.utils import mcmd, mrccmd, mspec
 
 import json
@@ -69,12 +51,30 @@ from pprint import pprint
 # Time to wait on pop()
 QUEUE_POP_WAIT_MS=100;
 # local clock speed Hz
-CLOCK_SPEED_HZ = 50000000;
+# CLOCK_SPEED_HZ = 50000000;
+
+def acmd(mods: list):
+    """ 
+    Helper function to create appfwk's Commands addressed to modules.
+        
+    :param      cmdid:  The coommand id
+    :type       cmdid:  str
+    :param      mods:   List of module name/data structures 
+    :type       mods:   list
+    
+    :returns:   A constructed Command object
+    :rtype:     dunedaq.appfwk.cmd.Command
+    """
+    return cmd.CmdObj(
+        modules=cmd.AddressedCmds(
+            cmd.AddressedCmd(match=m, data=o)
+            for m,o in mods
+        )
+    )
 
 
-def generate_df(
-        cmdnum,
-        network_endpoints,
+def generate(
+        NETWORK_ENDPOINTS,
         NUMBER_OF_DATA_PRODUCERS=2,
         EMULATOR_MODE=False,
         DATA_RATE_SLOWDOWN_FACTOR = 1,
@@ -83,9 +83,22 @@ def generate_df(
         OUTPUT_PATH=".",
         DISABLE_OUTPUT=False,
         FLX_INPUT=True,
-        TOKEN_COUNT=0
+        TOKEN_COUNT=0,
+        CLOCK_SPEED_HZ = 50000000
+
     ):
     """Generate the json configuration for the readout and DF process"""
+
+    cmd_data = {}
+
+    required_eps = {'trigdec', 'triginh', 'timesync'}
+    if not required_eps.issubset(NETWORK_ENDPOINTS):
+        raise RuntimeError(f"ERROR: not all the required endpoints ({', '.join(required_eps)}) found in list of endpoints {' '.join(NETWORK_ENDPOINTS.keys())}")
+
+
+
+    LATENCY_BUFFER_SIZE=3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR)
+    RATE_KHZ=CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000)
 
     # Define modules and queues
     queue_bare_specs = [
@@ -168,30 +181,21 @@ def generate_df(
                             for idx in range(NUMBER_OF_DATA_PRODUCERS)
                         ]))
 
-    
+    cmd_data['init'] = app.Init(queues=queue_specs, modules=mod_specs)
 
 
-    init_specs = app.Init(queues=queue_specs, modules=mod_specs)
-
-    initcmd = rccmd.RCCommand(
-        id=basecmd.CmdId("init"),
-        entry_state="NONE",
-        exit_state="INITIAL",
-        data=init_specs
-    )
-
-    confcmd = mrccmd("conf", "INITIAL", "CONFIGURED",[
+    cmd_data['conf'] = acmd([
                 ("ntoq_trigdec", ntoq.Conf(msg_type="dunedaq::dfmessages::TriggerDecision",
                                            msg_module_name="TriggerDecisionNQ",
                                            receiver_config=nor.Conf(ipm_plugin_type="ZmqReceiver",
-                                                                    address=network_endpoints["trigdec"])
+                                                                    address=NETWORK_ENDPOINTS["trigdec"])
                                            )
                  ),
 
                 ("qton_token", qton.Conf(msg_type="dunedaq::dfmessages::TriggerDecisionToken",
                                            msg_module_name="TriggerDecisionTokenNQ",
                                            sender_config=nos.Conf(ipm_plugin_type="ZmqSender",
-                                                                  address=network_endpoints["triginh"],
+                                                                  address=NETWORK_ENDPOINTS["triginh"],
                                                                   stype="msgpack")
                                            )
                  ),
@@ -199,7 +203,7 @@ def generate_df(
                 ("qton_timesync", qton.Conf(msg_type="dunedaq::dfmessages::TimeSync",
                                             msg_module_name="TimeSyncNQ",
                                             sender_config=nos.Conf(ipm_plugin_type="ZmqSender",
-                                                                   address=network_endpoints["timesync"],
+                                                                   address=NETWORK_ENDPOINTS["timesync"],
                                                                    stype="msgpack")
                                            )
                 ),
@@ -238,7 +242,7 @@ def generate_df(
                 ("fake_source",fakecr.Conf(
                             link_ids=list(range(NUMBER_OF_DATA_PRODUCERS)),
                             # input_limit=10485100, # default
-                            rate_khz = CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR*1000),
+                            rate_khz = RATE_KHZ,
                             raw_type = "wib",
                             data_filename = DATA_FILE,
                             queue_timeout_ms = QUEUE_POP_WAIT_MS
@@ -269,7 +273,7 @@ def generate_df(
                         emulator_mode = EMULATOR_MODE,
                         # fake_trigger_flag=0, # default
                         source_queue_timeout_ms= QUEUE_POP_WAIT_MS,
-                        latency_buffer_size = 3*CLOCK_SPEED_HZ/(25*12*DATA_RATE_SLOWDOWN_FACTOR),
+                        latency_buffer_size = LATENCY_BUFFER_SIZE,
                         pop_limit_pct = 0.8,
                         pop_size_pct = 0.1,
                         apa_number = 0,
@@ -277,8 +281,9 @@ def generate_df(
                         )) for idx in range(NUMBER_OF_DATA_PRODUCERS)
             ])
 
+
     startpars = rccmd.StartParams(run=RUN_NUMBER, disable_data_storage=DISABLE_OUTPUT)
-    startcmd = mrccmd("start", "CONFIGURED", "RUNNING", [
+    cmd_data['start'] = acmd([
             ("qton_token", startpars),
             ("datawriter", startpars),
             ("ffr", startpars),
@@ -290,7 +295,7 @@ def generate_df(
             ("ntoq_trigdec", startpars),
         ])
 
-    stopcmd = mrccmd("stop", "RUNNING", "CONFIGURED", [
+    cmd_data['stop'] = acmd([
             ("ntoq_trigdec", None),
             ("rqg", None),
             ("flxcard.*", None),
@@ -302,234 +307,16 @@ def generate_df(
             ("qton_token", None),
         ])
 
-    pausecmd = mrccmd("pause", "RUNNING", "RUNNING", [
+    cmd_data['pause'] = acmd([
             ("", None)
         ])
 
-    resumecmd = mrccmd("resume", "RUNNING", "RUNNING", [
+    cmd_data['resume'] = acmd([
             ("", None)
         ])
 
-    scrapcmd = mrccmd("scrap", "CONFIGURED", "INITIAL", [
+    cmd_data['scrap'] = acmd([
             ("", None)
         ])
 
-    # Create a list of commands
-    cmd_seq = [initcmd, confcmd, startcmd, stopcmd, pausecmd, resumecmd, scrapcmd]
-
-    # Print them as json (to be improved/moved out)
-    #jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
-    jstr = json.dumps(cmd_seq[cmdnum].data, indent=4, sort_keys=True)
-    return jstr
-
-#===============================================================================
-def generate_trigemu(
-        cmdnum,
-        network_endpoints,
-        NUMBER_OF_DATA_PRODUCERS=2,          
-        DATA_RATE_SLOWDOWN_FACTOR = 1,
-        RUN_NUMBER = 333, 
-        TRIGGER_RATE_HZ = 1.0,
-        TOKEN_COUNT = 10
-    ):
-    """Generate the json config for the TriggerDecisionEmulator process"""
-    
-    trg_interval_ticks = math.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR)
-
-    # Define modules and queues
-    queue_bare_specs = [
-            app.QueueSpec(inst="time_sync_from_netq", kind='FollySPSCQueue', capacity=100),
-            app.QueueSpec(inst="token_from_netq", kind='FollySPSCQueue', capacity=20),
-            app.QueueSpec(inst="trigger_decision_to_netq", kind='FollySPSCQueue', capacity=20),
-        ]
-
-    # Only needed to reproduce the same order as when using jsonnet
-    queue_specs = app.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
-
-
-    mod_specs = [
-        mspec("qton_trigdec", "QueueToNetwork", [
-                        app.QueueInfo(name="input", inst="trigger_decision_to_netq", dir="input")
-                    ]),
-
-        mspec("ntoq_token", "NetworkToQueue", [
-                        app.QueueInfo(name="output", inst="token_from_netq", dir="output")
-                    ]),
-
-        mspec("ntoq_timesync", "NetworkToQueue", [
-                        app.QueueInfo(name="output", inst="time_sync_from_netq", dir="output")
-                    ]),
-
-        mspec("tde", "TriggerDecisionEmulator", [
-                        app.QueueInfo(name="time_sync_source", inst="time_sync_from_netq", dir="input"),
-                        app.QueueInfo(name="token_source", inst="token_from_netq", dir="input"),
-                        app.QueueInfo(name="trigger_decision_sink", inst="trigger_decision_to_netq", dir="output"),
-                    ]),
-        ]
-
-    init_specs = app.Init(queues=queue_specs, modules=mod_specs)
-
-    initcmd = rccmd.RCCommand(
-        id=basecmd.CmdId("init"),
-        entry_state="NONE",
-        exit_state="INITIAL",
-        data=init_specs
-    )
-
-    confcmd = mrccmd("conf", "INITIAL", "CONFIGURED",[
-                ("qton_trigdec", qton.Conf(msg_type="dunedaq::dfmessages::TriggerDecision",
-                                           msg_module_name="TriggerDecisionNQ",
-                                           sender_config=nos.Conf(ipm_plugin_type="ZmqSender",
-                                                                  address=network_endpoints["trigdec"],
-                                                                  stype="msgpack")
-                                           )
-                 ),
-
-                 ("ntoq_token", ntoq.Conf(msg_type="dunedaq::dfmessages::TriggerDecisionToken",
-                                            msg_module_name="TriggerDecisionTokenNQ",
-                                            receiver_config=nor.Conf(ipm_plugin_type="ZmqReceiver",
-                                                                     address=network_endpoints["triginh"])
-                                            )
-                 ),
-
-                ("ntoq_timesync", ntoq.Conf(msg_type="dunedaq::dfmessages::TimeSync",
-                                           msg_module_name="TimeSyncNQ",
-                                           receiver_config=nor.Conf(ipm_plugin_type="ZmqReceiver",
-                                                                    address=network_endpoints["timesync"])
-                                           )
-                ),
-
-                ("tde", tde.ConfParams(
-                        links=[idx for idx in range(NUMBER_OF_DATA_PRODUCERS)],
-                        min_links_in_request=NUMBER_OF_DATA_PRODUCERS,
-                        max_links_in_request=NUMBER_OF_DATA_PRODUCERS,
-                        min_readout_window_ticks=math.floor(CLOCK_SPEED_HZ/(DATA_RATE_SLOWDOWN_FACTOR*1000)),
-                        max_readout_window_ticks=math.floor(CLOCK_SPEED_HZ/(DATA_RATE_SLOWDOWN_FACTOR*1000)),
-                        trigger_window_offset=math.floor(CLOCK_SPEED_HZ/(DATA_RATE_SLOWDOWN_FACTOR*2000)),
-                        # The delay is set to put the trigger well within the latency buff
-                        trigger_delay_ticks=math.floor(CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR),
-                        # We divide the trigger interval by
-                        # DATA_RATE_SLOWDOWN_FACTOR so the triggers are still
-                        # emitted per (wall-clock) second, rather than being
-                        # spaced out further
-                        trigger_interval_ticks=trg_interval_ticks,
-                        clock_frequency_hz=CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR,
-                        initial_token_count=TOKEN_COUNT                    
-                        )),
-            ])
-
-    startpars = rccmd.StartParams(run=RUN_NUMBER, trigger_interval_ticks=trg_interval_ticks)
-    startcmd = mrccmd("start", "CONFIGURED", "RUNNING", [
-            ("qton_trigdec", startpars),
-            ("ntoq_token", startpars),
-            ("ntoq_timesync", startpars),
-            ("tde", startpars),
-        ])
-
-    stopcmd = mrccmd("stop", "RUNNING", "CONFIGURED", [
-            ("qton_trigdec", None),
-            ("ntoq_timesync", None),
-            ("ntoq_token", None),
-            ("tde", None),
-        ])
-
-    pausecmd = mrccmd("pause", "RUNNING", "RUNNING", [
-            ("", None)
-        ])
-
-    resumecmd = mrccmd("resume", "RUNNING", "RUNNING", [
-            ("tde", tde.ResumeParams(
-                            trigger_interval_ticks=trg_interval_ticks
-                        ))
-        ])
-
-    scrapcmd = mrccmd("scrap", "CONFIGURED", "INITIAL", [
-            ("", None)
-        ])
-
-    # Create a list of commands
-    cmd_seq = [initcmd, confcmd, startcmd, stopcmd, pausecmd, resumecmd, scrapcmd]
-
-    # Print them as json (to be improved/moved out)
-    jstr = json.dumps(cmd_seq[cmdnum].data, indent=4, sort_keys=True)
-    return jstr
-
-if __name__ == '__main__':
-    # Add -h as default help option
-    CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
-
-    import click
-
-    @click.command(context_settings=CONTEXT_SETTINGS)
-    @click.option('-n', '--number-of-data-producers', default=2)
-    @click.option('-e', '--emulator-mode', is_flag=True)
-    @click.option('-s', '--data-rate-slowdown-factor', default=1)
-    @click.option('-r', '--run-number', default=333)
-    @click.option('-t', '--trigger-rate-hz', default=1.0)
-    @click.option('-c', '--token-count', default=10)
-    @click.option('-d', '--data-file', type=click.Path(), default='./frames.bin')
-    @click.option('-o', '--output-path', type=click.Path(), default='.')
-    @click.option('--disable-data-storage', is_flag=True)
-    @click.option('-f', '--use-felix', is_flag=True)
-    @click.option('--host-ip-df', default='127.0.0.1')
-    @click.option('--host-ip-trigemu', default='127.0.0.1')
-    @click.argument('json_dir', type=click.Path(), default='minidaqapp')
-    def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, token_count, data_file, output_path, disable_data_storage, use_felix, host_ip_df, host_ip_trigemu, json_dir):
-        """
-          JSON_FILE: Input raw data file.
-          JSON_FILE: Output json configuration file.
-        """
-
-        import os.path
-        if os.path.exists(json_dir):
-            raise click.Abort(f"Directory {json_dir} already exists")
-
-        data_dir = os.path.join(json_dir, 'data')
-        os.makedirs(data_dir)
-
-
-        json_file_trigemu=os.path.join(data_dir,"trgemu")
-        json_file_df = os.path.join(data_dir, "ruflx_df" if use_felix else "ruemu_df")
-
-        if token_count > 0:
-            df_token_count = 0
-            trigemu_token_count = token_count
-        else:
-            df_token_count = -1 * token_count
-            trigemu_token_count = 0
-
-        network_endpoints={
-            "trigdec" : f"tcp://{host_ip_trigemu}:12345",
-            "triginh" : f"tcp://{host_ip_df}:12346",
-            "timesync": f"tcp://{host_ip_df}:12347"
-        }
-        cmdname_seq = ["init", "conf", "start", "stop", "pause", "resume", "scrap"]
-        for i in range(0, len(cmdname_seq)) :
-            with open(f"{json_file_trigemu}_{cmdname_seq[i]}.json", 'w') as f:
-                f.write(generate_trigemu(
-                        i,
-                        network_endpoints,
-                        NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
-                        DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
-                        RUN_NUMBER = run_number, 
-                        TRIGGER_RATE_HZ = trigger_rate_hz,
-                        TOKEN_COUNT = trigemu_token_count
-                    ))
-
-            with open(f"{json_file_df}_{cmdname_seq[i]}.json", 'w') as f:
-                f.write(generate_df(
-                        i,
-                        network_endpoints,
-                        NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
-                        EMULATOR_MODE = emulator_mode,
-                        DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
-                        RUN_NUMBER = run_number, 
-                        DATA_FILE = data_file,
-                        OUTPUT_PATH = output_path,
-                        DISABLE_OUTPUT = disable_data_storage,
-                        FLX_INPUT = use_felix,
-                        TOKEN_COUNT = df_token_count
-                    ))
-
-    cli()
-    
+    return cmd_data
