@@ -7,7 +7,7 @@ Welcome to the minidaqapp wiki!
 
 To help people understand/remember where the various pieces of the MiniDAQApp are located, here is a list of the repositories that contribute modules or libraries (valid as of 16-Dec-2020):
 
-* [_minidaqapp_](https://github.com/DUNE-DAQ/dataformats) - (this repository) is currently envisioned to simply have configuration elements for the overall MiniDAQApp process. The DAQModules and supporting code are expected to be drawn from other repositories.
+* [_minidaqapp_](https://github.com/DUNE-DAQ/minidaqapp) - (this repository) is currently envisioned to simply have configuration elements for the overall MiniDAQApp process. The DAQModules and supporting code are expected to be drawn from other repositories.
 
 * [_dataformats_](https://github.com/DUNE-DAQ/dataformats) - has the code for raw data structures.  Currently, this includes both data that is produced by the detector electronics and data that is produced by the DAQ system (that becomes part of the raw data). 
 
