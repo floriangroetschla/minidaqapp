@@ -17,12 +17,13 @@ moo.otypes.load_types('dfmodules/datawriter.jsonnet')
 moo.otypes.load_types('dfmodules/hdf5datastore.jsonnet')
 moo.otypes.load_types('readout/fakecardreader.jsonnet')
 moo.otypes.load_types('readout/datalinkhandler.jsonnet')
+moo.otypes.load_types('readout/datarecorder.jsonnet')
 
 # Import new types
-import dunedaq.cmdlib.cmd as basecmd # AddressedCmd, 
-import dunedaq.rcif.cmd as rccmd # AddressedCmd, 
-import dunedaq.appfwk.cmd as cmd # AddressedCmd, 
-import dunedaq.appfwk.app as app # AddressedCmd, 
+import dunedaq.cmdlib.cmd as basecmd # AddressedCmd,
+import dunedaq.rcif.cmd as rccmd # AddressedCmd,
+import dunedaq.appfwk.cmd as cmd # AddressedCmd,
+import dunedaq.appfwk.app as app # AddressedCmd,
 import dunedaq.trigemu.triggerdecisionemulator as tde
 import dunedaq.dfmodules.requestgenerator as rqg
 import dunedaq.dfmodules.fragmentreceiver as ffr
@@ -30,6 +31,7 @@ import dunedaq.dfmodules.datawriter as dw
 import dunedaq.dfmodules.hdf5datastore as hdf5ds
 import dunedaq.readout.fakecardreader as fcr
 import dunedaq.readout.datalinkhandler as dlh
+import dunedaq.readout.datarecorder as dr
 
 from appfwk.utils import mcmd, mrccmd, mspec
 
@@ -44,14 +46,15 @@ def generate(
         NUMBER_OF_DATA_PRODUCERS=2,
         EMULATOR_MODE=False,
         DATA_RATE_SLOWDOWN_FACTOR = 10,
-        RUN_NUMBER = 333, 
+        RUN_NUMBER = 333,
         TRIGGER_RATE_HZ = 1.0,
         DATA_FILE="./frames.bin",
         OUTPUT_PATH=".",
         DISABLE_OUTPUT=False,
-        TOKEN_COUNT=10
+        TOKEN_COUNT=10,
+        SNB_RECORDING=False
     ):
-    
+
     trigger_interval_ticks = math.floor((1/TRIGGER_RATE_HZ) * CLOCK_SPEED_HZ/DATA_RATE_SLOWDOWN_FACTOR)
 
     # Define modules and queues
@@ -69,8 +72,11 @@ def generate(
 
             app.QueueSpec(inst=f"wib_fake_link_{idx}", kind='FollySPSCQueue', capacity=100000)
                 for idx in range(NUMBER_OF_DATA_PRODUCERS)
+        ] + [
+            app.QueueSpec(inst=f"snb_link_{idx}", kind='FollySPSCQueue', capacity=100000)
+                for idx in range(NUMBER_OF_DATA_PRODUCERS)
         ]
-    
+
 
     # Only needed to reproduce the same order as when using jsonnet
     queue_specs = app.QueueSpecs(sorted(queue_bare_specs, key=lambda x: x.inst))
@@ -115,7 +121,13 @@ def generate(
                             app.QueueInfo(name="timesync", inst="time_sync_q", dir="output"),
                             app.QueueInfo(name="requests", inst=f"data_requests_{idx}", dir="input"),
                             app.QueueInfo(name="fragments", inst="data_fragments_q", dir="output"),
+                            app.QueueInfo(name="snb", inst=f"snb_link_{idx}", dir="output"),
                             ]) for idx in range(NUMBER_OF_DATA_PRODUCERS)
+        ] + [
+                mspec(f"data_recorder_{idx}", "DataRecorder", [
+
+                            app.QueueInfo(name="snb", inst=f"snb_link_{idx}", dir="input")
+                            ]) for idx in (range(NUMBER_OF_DATA_PRODUCERS) if SNB_RECORDING else [])
         ]
 
     init_specs = app.Init(queues=queue_specs, modules=mod_specs)
@@ -158,7 +170,7 @@ def generate(
                 ("rqg", rqg.ConfParams(
                         map=rqg.mapgeoidqueue([
                                 rqg.geoidinst(apa=0, link=idx, queueinstance=f"data_requests_{idx}") for idx in range(NUMBER_OF_DATA_PRODUCERS)
-                            ])  
+                            ])
                         )),
                 ("ffr", ffr.ConfParams(
                             general_queue_timeout=QUEUE_POP_WAIT_MS
@@ -205,8 +217,14 @@ def generate(
                         apa_number = 0,
                         link_number = idx
                         )) for idx in range(NUMBER_OF_DATA_PRODUCERS)
+            ] + [
+                (f"data_recorder_{idx}", dr.Conf(
+                        output_file = f"output_{idx}.out",
+                        compression_algorithm = "None",
+                        stream_buffer_size = 8388608
+                        )) for idx in (range(NUMBER_OF_DATA_PRODUCERS) if SNB_RECORDING else [])
             ])
-    
+
     jstr = json.dumps(confcmd.pod(), indent=4, sort_keys=True)
     print(jstr)
 
@@ -215,6 +233,7 @@ def generate(
             ("datawriter", startpars),
             ("ffr", startpars),
             ("datahandler_.*", startpars),
+            ("data_recorder_.*", startpars),
             ("fake_source", startpars),
             ("rqg", startpars),
             ("tde", startpars),
@@ -231,6 +250,7 @@ def generate(
             ("datahandler_.*", None),
             ("ffr", None),
             ("datawriter", None),
+            ("data_recorder_.*", None)
         ])
 
     jstr = json.dumps(stopcmd.pod(), indent=4, sort_keys=True)
@@ -262,10 +282,23 @@ def generate(
     # Create a list of commands
     cmd_seq = [initcmd, confcmd, startcmd, stopcmd, pausecmd, resumecmd, scrapcmd]
 
+    if (SNB_RECORDING):
+        # Add optional command
+        record_cmd = mrccmd("record", "RUNNING", "RUNNING", [
+                ("datahandler_.*", dlh.RecordingParams(
+                    duration=10
+                ))
+        ])
+
+        jstr = json.dumps(record_cmd.pod(), indent=4, sort_keys=True)
+        print("="*80+"\nRecord\n\n", jstr)
+
+        cmd_seq.append(record_cmd)
+
     # Print them as json (to be improved/moved out)
     jstr = json.dumps([c.pod() for c in cmd_seq], indent=4, sort_keys=True)
     return jstr
-        
+
 if __name__ == '__main__':
     # Add -h as default help option
     CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -282,8 +315,9 @@ if __name__ == '__main__':
     @click.option('-o', '--output-path', type=click.Path(), default='.')
     @click.option('--disable-data-storage', is_flag=True)
     @click.option('-c', '--token-count', default=10)
+    @click.option('--enable-snb-recording', is_flag=True)
     @click.argument('json_file', type=click.Path(), default='minidaq-app-fake-readout.json')
-    def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, data_file, output_path, disable_data_storage, token_count, json_file):
+    def cli(number_of_data_producers, emulator_mode, data_rate_slowdown_factor, run_number, trigger_rate_hz, data_file, output_path, disable_data_storage, token_count, enable_snb_recording, json_file):
         """
           JSON_FILE: Input raw data file.
           JSON_FILE: Output json configuration file.
@@ -294,12 +328,13 @@ if __name__ == '__main__':
                     NUMBER_OF_DATA_PRODUCERS = number_of_data_producers,
                     EMULATOR_MODE = emulator_mode,
                     DATA_RATE_SLOWDOWN_FACTOR = data_rate_slowdown_factor,
-                    RUN_NUMBER = run_number, 
+                    RUN_NUMBER = run_number,
                     TRIGGER_RATE_HZ = trigger_rate_hz,
                     DATA_FILE = data_file,
                     OUTPUT_PATH = output_path,
                     DISABLE_OUTPUT = disable_data_storage,
-                    TOKEN_COUNT = token_count
+                    TOKEN_COUNT = token_count,
+                    SNB_RECORDING = enable_snb_recording
                 ))
 
         print(f"'{json_file}' generation completed.")
